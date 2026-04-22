@@ -416,5 +416,42 @@ footer strong{color:var(--sky);font-weight:400;}
     }
   });
 </script>
+  <script>
+  // ambil progress terakhir (default 1 = hanya chapter 1 terbuka)
+  let unlockedChapter = parseInt(localStorage.getItem('unlockedChapter')) || 1;
+
+  function isUnlocked(chapter) {
+    return chapter <= unlockedChapter;
+  }
+
+  function unlockNext(chapter) {
+    if (chapter === unlockedChapter && unlockedChapter < 6) {
+      unlockedChapter++;
+      localStorage.setItem('unlockedChapter', unlockedChapter);
+      updateChapters();
+      showToast('Chapter berikutnya terbuka ✦');
+    }
+  }
+
+  function updateChapters() {
+    for (let i = 1; i <= 6; i++) {
+      const card = document.getElementById(`chcard-${i}`);
+      const open = card.querySelector('.ch-open');
+      const lock = card.querySelector('.ch-lock-badge');
+
+      if (isUnlocked(i)) {
+        open.style.display = 'inline-flex';
+        lock.style.display = 'none';
+        card.style.opacity = '1';
+      } else {
+        open.style.display = 'none';
+        lock.style.display = 'inline-flex';
+        card.style.opacity = '.5';
+      }
+    }
+  }
+  // jalankan saat load
+  updateChapters();
+</script>
 </body>
 </html>
