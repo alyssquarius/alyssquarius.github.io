@@ -1,0 +1,1054 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Chapter 03 — Alasan</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@200;300;400&display=swap" rel="stylesheet"/>
+  <style>
+      *,
+      *::before,
+      *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        --cream: #f5edd9;
+        --gold: #c9a96e;
+        --gold-light: #e8d5a3;
+        --rose: #b5636a;
+        --rose-dark: #7a3b40;
+        --deep: #0e0b12;
+        --mid: #1a1425;
+        --surface: #231b30;
+        --text: #ede4d3;
+        --muted: #9b8fa0;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        background: var(--deep);
+        color: var(--text);
+        font-family: "Jost", sans-serif;
+        font-weight: 300;
+        overflow-x: hidden;
+        cursor: none;
+      }
+
+      /* Custom cursor */
+      .cursor {
+        position: fixed;
+        width: 8px;
+        height: 8px;
+        background: var(--gold);
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 9999;
+        transform: translate(-50%, -50%);
+        transition:
+          width 0.2s,
+          height 0.2s,
+          opacity 0.2s;
+      }
+      .cursor-ring {
+        position: fixed;
+        width: 30px;
+        height: 30px;
+        border: 1px solid rgba(201, 169, 110, 0.4);
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 9998;
+        transform: translate(-50%, -50%);
+        transition: all 0.12s ease-out;
+      }
+
+      /* Canvas stars */
+      #starCanvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      /* ── HERO ── */
+      .hero {
+        position: relative;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 2rem;
+        z-index: 1;
+      }
+
+      .hero-tag {
+        font-family: "Jost", sans-serif;
+        font-weight: 200;
+        font-size: 0.7rem;
+        letter-spacing: 0.35em;
+        text-transform: uppercase;
+        color: var(--gold);
+        margin-bottom: 2rem;
+        opacity: 0;
+        animation: fadeUp 0.8s 0.3s ease forwards;
+      }
+
+      .hero-title {
+        font-family: "Cormorant Garamond", serif;
+        font-size: clamp(3.5rem, 10vw, 7rem);
+        font-weight: 300;
+        line-height: 1;
+        letter-spacing: -0.01em;
+        color: var(--cream);
+        opacity: 0;
+        animation: fadeUp 0.9s 0.5s ease forwards;
+      }
+
+      .hero-title em {
+        font-style: italic;
+        color: var(--gold-light);
+      }
+
+      .hero-subtitle {
+        font-size: 0.85rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-top: 1.5rem;
+        opacity: 0;
+        animation: fadeUp 0.8s 0.8s ease forwards;
+      }
+
+      .divider {
+        width: 60px;
+        height: 1px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          var(--gold),
+          transparent
+        );
+        margin: 2.5rem auto;
+        opacity: 0;
+        animation: fadeUp 0.6s 1s ease forwards;
+      }
+
+      .scroll-hint {
+        position: absolute;
+        bottom: 2.5rem;
+        left: 0;
+        right: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--muted);
+        font-size: 0.7rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        text-align: center;
+        opacity: 0;
+        animation: fadeUp 0.6s 1.5s ease forwards;
+      }
+
+      .scroll-line {
+        width: 1px;
+        height: 40px;
+        background: linear-gradient(to bottom, var(--gold), transparent);
+        animation: scrollAnim 2s 2s ease-in-out infinite;
+      }
+
+      @keyframes scrollAnim {
+        0%,
+        100% {
+          opacity: 0.3;
+          transform: scaleY(1);
+        }
+        50% {
+          opacity: 1;
+          transform: scaleY(0.6);
+        }
+      }
+
+      /* ── COUNTDOWN ── */
+      .section {
+        position: relative;
+        z-index: 1;
+        padding: 6rem 2rem;
+        max-width: 900px;
+        margin: 0 auto;
+      }
+
+      .section-label {
+        font-size: 0.65rem;
+        letter-spacing: 0.4em;
+        text-transform: uppercase;
+        color: var(--gold);
+        margin-bottom: 1rem;
+        text-align: center;
+      }
+
+      .section-title {
+        font-family: "Cormorant Garamond", serif;
+        font-size: clamp(2rem, 5vw, 3.2rem);
+        font-weight: 300;
+        text-align: center;
+        color: var(--cream);
+        margin-bottom: 3rem;
+      }
+
+      .countdown-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1px;
+        background: rgba(201, 169, 110, 0.15);
+        border: 1px solid rgba(201, 169, 110, 0.15);
+        border-radius: 2px;
+        overflow: hidden;
+        margin-bottom: 1.5rem;
+      }
+
+      .cd-cell {
+        background: var(--mid);
+        padding: 2.5rem 1rem;
+        text-align: center;
+      }
+
+      .cd-num {
+        font-family: "Cormorant Garamond", serif;
+        font-size: clamp(2.5rem, 8vw, 5rem);
+        font-weight: 300;
+        color: var(--gold-light);
+        line-height: 1;
+        display: block;
+        transition: transform 0.15s;
+      }
+
+      .cd-num.bump {
+        animation: bump 0.15s ease;
+      }
+
+      .cd-label {
+        display: block;
+        font-size: 0.6rem;
+        letter-spacing: 0.3em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-top: 0.75rem;
+      }
+
+      .cd-status {
+        text-align: center;
+        font-size: 0.8rem;
+        color: var(--muted);
+        letter-spacing: 0.05em;
+      }
+
+      .cd-bar-wrap {
+        background: rgba(201, 169, 110, 0.1);
+        border-radius: 99px;
+        height: 4px;
+        overflow: hidden;
+        margin: 1.5rem 0 0.5rem;
+      }
+
+      .cd-bar {
+        height: 100%;
+        background: linear-gradient(90deg, var(--gold), var(--gold-light));
+        border-radius: 99px;
+        transition: width 1s ease;
+        width: 0%;
+      }
+
+      .cd-progress-label {
+        text-align: center;
+        font-size: 0.7rem;
+        color: var(--muted);
+        letter-spacing: 0.1em;
+        margin-bottom: 1rem;
+      }
+
+      /* unlock button */
+      .unlock-btn {
+        display: block;
+        margin: 2.5rem auto 0;
+        padding: 1rem 3rem;
+        background: transparent;
+        border: 1px solid var(--gold);
+        color: var(--gold);
+        font-family: "Jost", sans-serif;
+        font-size: 0.75rem;
+        letter-spacing: 0.3em;
+        text-transform: uppercase;
+        cursor: none;
+        position: relative;
+        overflow: hidden;
+        transition: color 0.3s;
+      }
+
+      .unlock-btn::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: var(--gold);
+        transform: translateX(-101%);
+        transition: transform 0.4s cubic-bezier(0.77, 0, 0.18, 1);
+        z-index: 0;
+      }
+
+      .unlock-btn:hover::before {
+        transform: translateX(0);
+      }
+      .unlock-btn:hover {
+        color: var(--deep);
+      }
+      .unlock-btn span {
+        position: relative;
+        z-index: 1;
+      }
+      .unlock-btn:disabled {
+        opacity: 0.35;
+        cursor: not-allowed;
+      }
+
+      /* ── CHAPTERS ── */
+      .chapters-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 1px;
+        background: rgba(201, 169, 110, 0.1);
+        border: 1px solid rgba(201, 169, 110, 0.1);
+      }
+
+      .chapter-card {
+        background: var(--mid);
+        padding: 2rem;
+        position: relative;
+        overflow: hidden;
+        transition: background 0.3s;
+        cursor: none;
+      }
+
+      .chapter-card:hover {
+        background: var(--surface);
+      }
+
+      .chapter-card::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          var(--gold),
+          transparent
+        );
+        transform: scaleX(0);
+        transition: transform 0.4s;
+      }
+
+      .chapter-card:hover::after {
+        transform: scaleX(1);
+      }
+
+      .ch-mood {
+        font-size: 0.6rem;
+        letter-spacing: 0.3em;
+        text-transform: uppercase;
+        color: var(--gold);
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .ch-mood::before {
+        content: "";
+        display: inline-block;
+        width: 20px;
+        height: 1px;
+        background: var(--gold);
+      }
+
+      .ch-num {
+        font-family: "Cormorant Garamond", serif;
+        font-size: 4rem;
+        font-weight: 300;
+        color: rgba(201, 169, 110, 0.1);
+        line-height: 1;
+        position: absolute;
+        top: 1.2rem;
+        right: 1.5rem;
+        user-select: none;
+        transition: color 0.3s;
+      }
+
+      .chapter-card:hover .ch-num {
+        color: rgba(201, 169, 110, 0.2);
+      }
+
+      .ch-title {
+        font-family: "Cormorant Garamond", serif;
+        font-size: 1.5rem;
+        font-weight: 400;
+        color: var(--cream);
+        margin-bottom: 0.75rem;
+        margin-top: 0.5rem;
+      }
+
+      .ch-desc {
+        font-size: 0.78rem;
+        color: var(--muted);
+        line-height: 1.7;
+        letter-spacing: 0.02em;
+      }
+
+      .ch-lock {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        margin-top: 1.5rem;
+        font-size: 0.62rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--rose);
+        opacity: 0.7;
+      }
+
+      .ch-lock svg {
+        width: 10px;
+        height: 10px;
+      }
+
+      .ch-open {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        margin-top: 1.5rem;
+        font-size: 0.62rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--gold);
+      }
+
+      /* ── FLOATING PETALS ── */
+      .petals-container {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 0;
+        overflow: hidden;
+      }
+
+      .petal {
+        position: absolute;
+        top: -40px;
+        width: 6px;
+        height: 10px;
+        background: radial-gradient(
+          ellipse at 30% 30%,
+          rgba(181, 99, 106, 0.5),
+          rgba(122, 59, 64, 0.2)
+        );
+        border-radius: 60% 40% 60% 40%;
+        animation: petalFall linear infinite;
+        opacity: 0;
+      }
+
+      @keyframes petalFall {
+        0% {
+          transform: translateY(0) rotate(0deg);
+          opacity: 0;
+        }
+        5% {
+          opacity: 1;
+        }
+        90% {
+          opacity: 0.5;
+        }
+        100% {
+          transform: translateY(110vh) rotate(720deg);
+          opacity: 0;
+        }
+      }
+
+      /* ── MESSAGE ── */
+      .message-box {
+        background: var(--surface);
+        border: 1px solid rgba(201, 169, 110, 0.15);
+        padding: 3rem;
+        position: relative;
+      }
+
+      .message-box::before {
+        content: "\201C";
+        font-family: "Cormorant Garamond", serif;
+        font-size: 8rem;
+        color: rgba(201, 169, 110, 0.08);
+        position: absolute;
+        top: -0.5rem;
+        left: 1.5rem;
+        line-height: 1;
+      }
+
+      .message-text {
+        font-family: "Cormorant Garamond", serif;
+        font-size: clamp(1.1rem, 3vw, 1.4rem);
+        font-style: italic;
+        color: var(--cream);
+        line-height: 1.8;
+        text-align: center;
+        position: relative;
+        z-index: 1;
+      }
+
+      .message-sig {
+        text-align: center;
+        margin-top: 2rem;
+        font-size: 0.7rem;
+        letter-spacing: 0.3em;
+        text-transform: uppercase;
+        color: var(--gold);
+      }
+
+      /* ── CHAPTER CONTENT ── */
+      .chapter-card.locked {
+        opacity: 0.45;
+        cursor: not-allowed;
+        pointer-events: none;
+      }
+
+      .chapter-card.unlocked {
+        cursor: none;
+      }
+
+      .chapter-card.done .ch-open {
+        color: var(--muted);
+      }
+
+      .chapter-card.done .ch-open::before {
+        content: "✓ ";
+      }
+
+      #chapter-panel {
+        position: relative;
+        z-index: 1;
+      }
+
+      /* ── COUPON CARDS ── */
+      .coupon-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1px;
+        background: rgba(201, 169, 110, 0.1);
+        border: 1px solid rgba(201, 169, 110, 0.1);
+        margin-bottom: 1rem;
+      }
+
+      .coupon-card {
+        background: var(--mid);
+        padding: 2rem 1.5rem;
+        text-align: center;
+        transition: background 0.3s;
+      }
+
+      .coupon-card:hover {
+        background: var(--surface);
+      }
+
+      .coupon-icon {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+      }
+
+      .coupon-title {
+        font-family: "Cormorant Garamond", serif;
+        font-size: 1.2rem;
+        color: var(--cream);
+        margin-bottom: 0.5rem;
+      }
+
+      .coupon-desc {
+        font-size: 0.75rem;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      /* ── CHAPTER FOOTER ── */
+      footer {
+        position: relative;
+        z-index: 1;
+        text-align: center;
+        padding: 3rem 2rem;
+        color: var(--muted);
+        font-size: 0.65rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        border-top: 1px solid rgba(201, 169, 110, 0.08);
+      }
+
+      footer strong {
+        color: var(--gold);
+        font-weight: 400;
+      }
+
+      /* ── ANIMATIONS ── */
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(24px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes bump {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.08);
+        }
+      }
+
+      .reveal {
+        opacity: 0;
+        transform: translateY(30px);
+        transition:
+          opacity 0.7s ease,
+          transform 0.7s ease;
+      }
+
+      .revealed {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      /* ── MUSIC TOGGLE ── */
+      .music-btn {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        width: 44px;
+        height: 44px;
+        background: var(--surface);
+        border: 1px solid rgba(201, 169, 110, 0.3);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: none;
+        z-index: 100;
+        transition:
+          background 0.2s,
+          border-color 0.2s;
+      }
+
+      .music-btn:hover {
+        background: rgba(201, 169, 110, 0.15);
+        border-color: var(--gold);
+      }
+
+      .music-btn svg {
+        width: 16px;
+        height: 16px;
+        color: var(--gold);
+        transition: opacity 0.2s;
+      }
+
+      /* equalizer bars */
+      .eq {
+        display: flex;
+        gap: 2px;
+        align-items: flex-end;
+        height: 16px;
+      }
+
+      .eq-bar {
+        width: 3px;
+        background: var(--gold);
+        border-radius: 1px;
+        animation: eqAnim 1s ease-in-out infinite;
+      }
+
+      .eq-bar:nth-child(1) {
+        animation-delay: 0s;
+      }
+      .eq-bar:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+      .eq-bar:nth-child(3) {
+        animation-delay: 0.4s;
+      }
+
+      @keyframes eqAnim {
+        0%,
+        100% {
+          height: 4px;
+        }
+        50% {
+          height: 14px;
+        }
+      }
+
+      .eq.paused .eq-bar {
+        animation-play-state: paused;
+        height: 8px;
+      }
+
+      /* ── TOAST ── */
+      .toast {
+        position: fixed;
+        bottom: 5rem;
+        left: 50%;
+        transform: translateX(-50%) translateY(20px);
+        background: var(--surface);
+        border: 1px solid rgba(201, 169, 110, 0.25);
+        color: var(--cream);
+        padding: 0.75rem 1.5rem;
+        font-size: 0.75rem;
+        letter-spacing: 0.1em;
+        opacity: 0;
+        transition: all 0.3s;
+        pointer-events: none;
+        z-index: 200;
+        white-space: nowrap;
+      }
+
+      .toast.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+
+      /* Sparkle on click */
+      .sparkle {
+        position: fixed;
+        pointer-events: none;
+        z-index: 9997;
+        font-size: 16px;
+        animation: sparklePop 0.6s ease forwards;
+      }
+
+      @keyframes sparklePop {
+        0% {
+          opacity: 1;
+          transform: scale(0) rotate(-20deg);
+        }
+        50% {
+          opacity: 1;
+          transform: scale(1.2) rotate(10deg);
+        }
+        100% {
+          opacity: 0;
+          transform: scale(0.8) rotate(20deg) translateY(-30px);
+        }
+      }
+
+      @media (max-width: 600px) {
+        .countdown-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .cd-cell {
+          padding: 1.5rem 0.5rem;
+        }
+        .chapters-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* ── INTERACTIVE FEATURES ── */
+
+      /* Ch1: Time Capsule */
+      .capsule-form { display: flex; flex-direction: column; gap: 1rem; }
+      .capsule-input {
+        background: var(--mid); border: 1px solid rgba(201,169,110,0.2);
+        color: var(--cream); font-family: 'Cormorant Garamond', serif;
+        font-size: 1.1rem; padding: 1rem 1.25rem; resize: vertical;
+        min-height: 120px; outline: none; transition: border-color .2s;
+      }
+      .capsule-input:focus { border-color: var(--gold); }
+      .capsule-input::placeholder { color: var(--muted); font-style: italic; }
+      .capsule-entries { margin-top: 1.5rem; display: flex; flex-direction: column; gap: .75rem; }
+      .capsule-entry {
+        background: var(--surface); border-left: 2px solid var(--gold);
+        padding: 1rem 1.25rem;
+        font-family: 'Cormorant Garamond', serif; font-style: italic;
+        font-size: 1rem; color: var(--cream); line-height: 1.6;
+      }
+      .capsule-entry-meta { font-size: .65rem; color: var(--muted); margin-top: .5rem; letter-spacing: .1em; font-style: normal; font-family: 'Jost', sans-serif; }
+
+      /* Ch2: Gallery Slideshow */
+      .gallery-wrap { position: relative; overflow: hidden; background: var(--mid); border: 1px solid rgba(201,169,110,0.1); }
+      .gallery-slides { display: flex; transition: transform .5s cubic-bezier(.77,0,.18,1); }
+      .gallery-slide {
+        min-width: 100%; display: flex; flex-direction: column;
+        align-items: center; justify-content: center;
+        padding: 3rem 2rem; text-align: center; gap: 1.5rem;
+      }
+      .gallery-slide-img {
+        width: 100%; max-height: 320px; object-fit: cover;
+        border: 1px solid rgba(201,169,110,0.15);
+      }
+      .gallery-placeholder {
+        width: 100%; height: 220px; background: var(--surface);
+        border: 1px dashed rgba(201,169,110,0.2);
+        display: flex; align-items: center; justify-content: center;
+        font-family: 'Cormorant Garamond', serif; font-style: italic;
+        color: var(--muted); font-size: 1rem;
+      }
+      .gallery-caption { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.1rem; color: var(--cream); }
+      .gallery-date { font-size: .65rem; letter-spacing: .2em; text-transform: uppercase; color: var(--gold); }
+      .gallery-nav { display: flex; justify-content: center; align-items: center; gap: 1.5rem; padding: 1.25rem; border-top: 1px solid rgba(201,169,110,0.1); }
+      .gallery-nav-btn {
+        background: transparent; border: 1px solid rgba(201,169,110,0.3);
+        color: var(--gold); padding: .5rem 1.25rem; cursor: none;
+        font-family: 'Jost', sans-serif; font-size: .7rem; letter-spacing: .2em;
+        text-transform: uppercase; transition: all .2s;
+      }
+      .gallery-nav-btn:hover { background: rgba(201,169,110,0.1); border-color: var(--gold); }
+      .gallery-dots { display: flex; gap: .5rem; }
+      .gallery-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(201,169,110,0.2); transition: background .3s; cursor: none; }
+      .gallery-dot.active { background: var(--gold); }
+
+      /* Ch3: Flip Cards */
+      .reasons-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+      .reason-card-wrap { perspective: 800px; height: 160px; cursor: none; }
+      .reason-card {
+        width: 100%; height: 100%; position: relative;
+        transform-style: preserve-3d; transition: transform .6s cubic-bezier(.4,0,.2,1);
+      }
+      .reason-card.flipped { transform: rotateY(180deg); }
+      .reason-front, .reason-back {
+        position: absolute; inset: 0; backface-visibility: hidden;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        padding: 1.25rem; text-align: center;
+        border: 1px solid rgba(201,169,110,0.15);
+      }
+      .reason-front { background: var(--mid); }
+      .reason-back { background: var(--surface); transform: rotateY(180deg); }
+      .reason-num { font-family: 'Cormorant Garamond', serif; font-size: 2.5rem; color: rgba(201,169,110,0.2); line-height: 1; }
+      .reason-hint { font-size: .6rem; color: var(--muted); letter-spacing: .2em; text-transform: uppercase; margin-top: .5rem; }
+      .reason-text { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: .95rem; color: var(--cream); line-height: 1.5; }
+
+      /* Ch4: Coupon redeem */
+      .coupon-card { position: relative; cursor: none; }
+      .coupon-card.redeemed { opacity: .4; }
+      .coupon-card.redeemed::after {
+        content: 'DIPAKAI'; position: absolute; inset: 0;
+        display: flex; align-items: center; justify-content: center;
+        font-family: 'Jost', sans-serif; font-size: .65rem; letter-spacing: .3em;
+        color: var(--rose); border: 2px solid var(--rose); background: rgba(14,11,18,.7);
+      }
+      .coupon-redeem-btn {
+        margin-top: .75rem; background: transparent;
+        border: 1px solid rgba(201,169,110,0.25); color: var(--gold);
+        font-size: .6rem; letter-spacing: .2em; text-transform: uppercase;
+        padding: .4rem .75rem; cursor: none; transition: all .2s; width: 100%;
+        font-family: 'Jost', sans-serif;
+      }
+      .coupon-redeem-btn:hover { background: rgba(201,169,110,0.1); }
+
+      /* Ch5: Video theater */
+      .theater-wrap {
+        background: #000; border: 1px solid rgba(201,169,110,0.1);
+        padding: 1.5rem; position: relative;
+      }
+      .theater-screen {
+        width: 100%; aspect-ratio: 16/9; background: #0a0a0a;
+        display: flex; align-items: center; justify-content: center;
+        border: 1px solid rgba(201,169,110,0.08);
+        font-family: 'Cormorant Garamond', serif; font-style: italic;
+        color: var(--muted); font-size: 1rem; position: relative; overflow: hidden;
+      }
+      .theater-screen iframe { width: 100%; height: 100%; border: none; }
+      .theater-url-input {
+        background: var(--mid); border: 1px solid rgba(201,169,110,0.2);
+        color: var(--cream); font-family: 'Jost', sans-serif; font-size: .8rem;
+        padding: .6rem 1rem; outline: none; width: 100%; transition: border-color .2s;
+        margin-top: 1rem;
+      }
+      .theater-url-input:focus { border-color: var(--gold); }
+      .theater-url-input::placeholder { color: var(--muted); }
+      .theater-load-btn {
+        margin-top: .5rem; background: transparent; border: 1px solid var(--gold);
+        color: var(--gold); font-family: 'Jost', sans-serif; font-size: .7rem;
+        letter-spacing: .2em; text-transform: uppercase; padding: .6rem 1.5rem;
+        cursor: none; transition: all .2s;
+      }
+      .theater-load-btn:hover { background: rgba(201,169,110,0.1); }
+      .theater-title { font-size: .6rem; letter-spacing: .25em; text-transform: uppercase; color: var(--gold); margin-bottom: 1rem; text-align: center; }
+
+      /* Ch6: Typewriter letter */
+      .letter-wrap {
+        background: var(--surface); border: 1px solid rgba(201,169,110,0.15);
+        padding: 3rem; position: relative; min-height: 200px;
+      }
+      .letter-wrap::before {
+        content: '"'; font-family: 'Cormorant Garamond', serif; font-size: 8rem;
+        color: rgba(201,169,110,0.06); position: absolute; top: -.5rem; left: 1.5rem; line-height: 1;
+      }
+      .letter-text {
+        font-family: 'Cormorant Garamond', serif; font-size: clamp(1.05rem, 2.5vw, 1.3rem);
+        font-style: italic; color: var(--cream); line-height: 1.9;
+        text-align: center; position: relative; z-index: 1;
+        min-height: 3em;
+      }
+      .letter-cursor { display: inline-block; width: 2px; height: 1.1em; background: var(--gold); vertical-align: middle; animation: blink .8s step-end infinite; margin-left: 2px; }
+      @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+      .letter-sig { text-align: center; margin-top: 2rem; font-size: .7rem; letter-spacing: .3em; text-transform: uppercase; color: var(--gold); opacity: 0; transition: opacity 1s; }
+      .letter-sig.show { opacity: 1; }
+      .letter-restart-btn {
+        display: block; margin: 1.5rem auto 0; background: transparent;
+        border: 1px solid rgba(201,169,110,0.2); color: var(--muted);
+        font-size: .6rem; letter-spacing: .2em; text-transform: uppercase;
+        padding: .4rem 1rem; cursor: none; font-family: 'Jost', sans-serif;
+        transition: all .2s;
+      }
+      .letter-restart-btn:hover { border-color: var(--gold); color: var(--gold); }
+    </style>
+  <style>
+    .ch-page { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; padding: 6rem 2rem 4rem; }
+    .ch-back { display: inline-flex; align-items: center; gap: .5rem; font-size: .65rem; letter-spacing: .3em; text-transform: uppercase; color: var(--muted); text-decoration: none; margin-bottom: 3rem; transition: color .2s; cursor: none; }
+    .ch-back:hover { color: var(--gold); }
+    .ch-back::before { content: '←'; }
+    .ch-next-page { display: block; margin: 3rem auto 0; padding: 1rem 3rem; background: transparent; border: 1px solid var(--gold); color: var(--gold); font-family: "Jost", sans-serif; font-size: .75rem; letter-spacing: .3em; text-transform: uppercase; cursor: none; position: relative; overflow: hidden; transition: color .3s; text-decoration: none; text-align: center; width: fit-content; }
+    .ch-next-page::before { content: ""; position: absolute; inset: 0; background: var(--gold); transform: translateX(-101%); transition: transform .4s cubic-bezier(.77,0,.18,1); z-index: 0; }
+    .ch-next-page:hover::before { transform: translateX(0); }
+    .ch-next-page:hover { color: var(--deep); }
+    .ch-next-page span { position: relative; z-index: 1; }
+  </style>
+</head>
+<body>
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+  <canvas id="starCanvas"></canvas>
+  <div class="petals-container" id="petals"></div>
+  <div class="toast" id="toast"></div>
+
+  <main class="ch-page">
+    <a href="../index.html" class="ch-back">Kembali</a>
+    <div class="section-label">Chapter 03 — Soft Talk</div>
+    <h2 class="section-title" style="margin-bottom:2rem;">Alasan</h2>
+    
+      <p style="text-align:center;font-size:.75rem;color:var(--muted);letter-spacing:.1em;margin-bottom:1.5rem;">Tap tiap kartu untuk membuka alasannya ✦</p>
+      <div class="reasons-grid">
+        <div class="reason-card-wrap" onclick="this.querySelector('.reason-card').classList.toggle('flipped')">
+          <div class="reason-card"><div class="reason-front"><div class="reason-num">01</div><div class="reason-hint">tap untuk buka</div></div><div class="reason-back"><div class="reason-text">Senyummu yang bisa bikin hari aku langsung cerah</div></div></div>
+        </div>
+        <div class="reason-card-wrap" onclick="this.querySelector('.reason-card').classList.toggle('flipped')">
+          <div class="reason-card"><div class="reason-front"><div class="reason-num">02</div><div class="reason-hint">tap untuk buka</div></div><div class="reason-back"><div class="reason-text">Caramu ketawa sampai mata mengecil</div></div></div>
+        </div>
+        <div class="reason-card-wrap" onclick="this.querySelector('.reason-card').classList.toggle('flipped')">
+          <div class="reason-card"><div class="reason-front"><div class="reason-num">03</div><div class="reason-hint">tap untuk buka</div></div><div class="reason-back"><div class="reason-text">Kamu selalu ada di saat aku butuh</div></div></div>
+        </div>
+        <div class="reason-card-wrap" onclick="this.querySelector('.reason-card').classList.toggle('flipped')">
+          <div class="reason-card"><div class="reason-front"><div class="reason-num">04</div><div class="reason-hint">tap untuk buka</div></div><div class="reason-back"><div class="reason-text">Suaramu yang bikin tenang</div></div></div>
+        </div>
+        <div class="reason-card-wrap" onclick="this.querySelector('.reason-card').classList.toggle('flipped')">
+          <div class="reason-card"><div class="reason-front"><div class="reason-num">05</div><div class="reason-hint">tap untuk buka</div></div><div class="reason-back"><div class="reason-text">Perhatian kecil yang kamu kasih tanpa diminta</div></div></div>
+        </div>
+        <div class="reason-card-wrap" onclick="this.querySelector('.reason-card').classList.toggle('flipped')">
+          <div class="reason-card"><div class="reason-front"><div class="reason-num">06</div><div class="reason-hint">tap untuk buka</div></div><div class="reason-back"><div class="reason-text">Cara kamu lihat aku — seperti aku berharga</div></div></div>
+        </div>
+        <div class="reason-card-wrap" onclick="this.querySelector('.reason-card').classList.toggle('flipped')">
+          <div class="reason-card"><div class="reason-front"><div class="reason-num">07</div><div class="reason-hint">tap untuk buka</div></div><div class="reason-back"><div class="reason-text">Kamu nggak pernah bosan dengerin aku</div></div></div>
+        </div>
+        <div class="reason-card-wrap" onclick="this.querySelector('.reason-card').classList.toggle('flipped')">
+          <div class="reason-card"><div class="reason-front"><div class="reason-num">08</div><div class="reason-hint">tap untuk buka</div></div><div class="reason-back"><div class="reason-text">Kamu adalah rumah yang aku pilih setiap hari</div></div></div>
+        </div>
+      </div>
+    
+    <a href="chapter-4.html" class="ch-next-page"><span>Lanjut ke Chapter 04 ✦</span></a>
+  </main>
+  
+  <button class="music-btn" id="musicBtn" title="Play music">
+    <div class="eq paused" id="eq">
+      <div class="eq-bar"></div>
+      <div class="eq-bar"></div>
+      <div class="eq-bar"></div>
+    </div>
+  </button>
+
+  <script>
+    const cursor = document.getElementById('cursor');
+    const ring = document.getElementById('cursorRing');
+    let mx=0,my=0,rx=0,ry=0;
+    document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; cursor.style.left=mx+'px'; cursor.style.top=my+'px'; });
+    (function animRing(){ rx+=(mx-rx)*.12; ry+=(my-ry)*.12; ring.style.left=rx+'px'; ring.style.top=ry+'px'; requestAnimationFrame(animRing); })();
+
+    const sparkles=['✦','✧','★','✸','✺'];
+    document.addEventListener('click', e => {
+      const el=document.createElement('div'); el.className='sparkle';
+      el.textContent=sparkles[Math.floor(Math.random()*sparkles.length)];
+      el.style.left=e.clientX+'px'; el.style.top=e.clientY+'px';
+      el.style.color=`hsl(${38+Math.random()*20},${60+Math.random()*30}%,${60+Math.random()*20}%)`;
+      document.body.appendChild(el); setTimeout(()=>el.remove(),700);
+    });
+
+    const canvas=document.getElementById('starCanvas');
+    const ctx=canvas.getContext('2d');
+    let W,H,stars=[],shootingStars=[];
+    function initCanvas(){ W=canvas.width=window.innerWidth; H=canvas.height=window.innerHeight;
+      stars=Array.from({length:200},()=>({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.2+.2,a:Math.random(),speed:Math.random()*.003+.001,phase:Math.random()*Math.PI*2}));
+    }
+    function drawStars(t){
+      ctx.clearRect(0,0,W,H);
+      for(const s of stars){ const alpha=s.a*(.5+.5*Math.sin(t*s.speed*60+s.phase)); ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2); ctx.fillStyle=`rgba(232,213,163,${alpha})`; ctx.fill(); }
+      for(let i=shootingStars.length-1;i>=0;i--){ const ss=shootingStars[i]; ss.x+=ss.vx; ss.y+=ss.vy; ss.life--;
+        const alpha=ss.life/ss.maxLife; const grad=ctx.createLinearGradient(ss.x,ss.y,ss.x-ss.vx*12,ss.y-ss.vy*12);
+        grad.addColorStop(0,`rgba(232,213,163,${alpha})`); grad.addColorStop(1,'rgba(232,213,163,0)');
+        ctx.beginPath(); ctx.strokeStyle=grad; ctx.lineWidth=1.5; ctx.moveTo(ss.x,ss.y); ctx.lineTo(ss.x-ss.vx*12,ss.y-ss.vy*12); ctx.stroke();
+        if(ss.life<=0) shootingStars.splice(i,1);
+      }
+      if(Math.random()<.004&&shootingStars.length<3){ const angle=-Math.PI/6+(Math.random()-.5)*.4;
+        shootingStars.push({x:Math.random()*W,y:Math.random()*H*.5,vx:Math.cos(angle)*8,vy:Math.sin(angle)*8+4,life:60,maxLife:60}); }
+      requestAnimationFrame(drawStars);
+    }
+    initCanvas(); window.addEventListener('resize',initCanvas); requestAnimationFrame(drawStars);
+
+    const petalsCont=document.getElementById('petals');
+    function createPetal(){ const p=document.createElement('div'); p.className='petal';
+      p.style.left=Math.random()*100+'vw'; const dur=8+Math.random()*8;
+      p.style.animationDuration=dur+'s'; p.style.animationDelay=Math.random()*5+'s';
+      p.style.transform=`rotate(${Math.random()*360}deg)`;
+      p.style.width=(4+Math.random()*6)+'px'; p.style.height=(6+Math.random()*8)+'px';
+      petalsCont.appendChild(p); setTimeout(()=>p.remove(),(dur+5)*1000);
+    }
+    setInterval(createPetal,600); for(let i=0;i<8;i++) createPetal();
+
+    const toastEl=document.getElementById('toast');
+    let toastTimer;
+    function showToast(msg){ toastEl.textContent=msg; toastEl.classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(()=>toastEl.classList.remove('show'),3000); }
+
+    const musicBtn=document.getElementById('musicBtn');
+    const eq=document.getElementById('eq');
+    let audioCtx,gainNode,playing=false,oscillators=[];
+    function startAmbientMusic(){ audioCtx=new(window.AudioContext||window.webkitAudioContext)(); gainNode=audioCtx.createGain(); gainNode.gain.setValueAtTime(0,audioCtx.currentTime); gainNode.gain.linearRampToValueAtTime(.06,audioCtx.currentTime+2); gainNode.connect(audioCtx.destination);
+      const freqs=[261.63,329.63,392,523.25,659.25];
+      oscillators=freqs.map((f,i)=>{ const osc=audioCtx.createOscillator(),oscGain=audioCtx.createGain(); osc.type='sine'; osc.frequency.setValueAtTime(f,audioCtx.currentTime); oscGain.gain.setValueAtTime(0,audioCtx.currentTime); oscGain.gain.linearRampToValueAtTime(1,audioCtx.currentTime+i*.8+1.5);
+        const lfo=audioCtx.createOscillator(),lfoGain=audioCtx.createGain(); lfo.frequency.value=.2+i*.05; lfoGain.gain.value=.5; lfo.connect(lfoGain); lfoGain.connect(osc.frequency); lfo.start(); osc.connect(oscGain); oscGain.connect(gainNode); osc.start(); return{osc,oscGain,lfo};
+      });
+    }
+    function stopAmbientMusic(){ if(gainNode){ gainNode.gain.linearRampToValueAtTime(0,audioCtx.currentTime+1.5); setTimeout(()=>{ oscillators.forEach(o=>{try{o.osc.stop();o.lfo.stop();}catch(e){}}); audioCtx.close(); },1600); } }
+    musicBtn.addEventListener('click',()=>{ playing=!playing; if(playing){ startAmbientMusic(); eq.classList.remove('paused'); showToast('♪ Musik ambient menyala'); } else { stopAmbientMusic(); eq.classList.add('paused'); showToast('♪ Musik dimatikan'); } });
+  </script>
+
+  <script></script>
+</body>
+</html>
