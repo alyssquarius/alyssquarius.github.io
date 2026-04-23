@@ -179,7 +179,7 @@ function tick(){
   const pct=Math.min(100,(diff/YEAR)*100);
   document.getElementById('cd-bar').style.width=pct.toFixed(2)+'%';
   const days=Math.floor(diff/86400000),mo=Math.floor(days/30);
-  document.getElementById('cd-progress-label').textContent=mo<1?days+' hari bersama ✦':mo<12?mo+' bulan bersama — setiap detiknya berharga ✦':Math.floor(mo/12)+' tahun '+(mo%12>0?mo%12+' bulan ':'')+' bersama — luar biasa ✦';
+  document.getElementById('cd-progress-label').textContent=mo<1?days+' hari bersama ✦':mo<12?mo+' bulan bersama — setiap detiknya berharga ✦':Math.floor(mo/12)+' years '+(mo%12>0?mo%12+' month ':'')+' together ✦';
 }
 tick();setInterval(tick,1000);
 const btn=document.getElementById('unlockBtn');
