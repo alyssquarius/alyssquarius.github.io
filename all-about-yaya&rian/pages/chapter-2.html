@@ -5,8 +5,9 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Chapter 02 — Gallery Kita</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@200;300;400&display=swap" rel="stylesheet"/>
-<style>*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
-:root{--gold:#C9A96E;--gold-light:#E8D5A3;--rose:#B5636A;--rose-dark:#7A3B40;--deep:#0E0B12;--mid:#1A1425;--surface:#231B30;--card:#2A2040;--cream:#F5EDD9;--text:#EDE4D3;--muted:#9B8FA0;}
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{--gold:#C9A96E;--gold-light:#E8D5A3;--rose:#B5636A;--deep:#0E0B12;--mid:#1A1425;--surface:#231B30;--cream:#F5EDD9;--text:#EDE4D3;--muted:#9B8FA0;}
 html{scroll-behavior:smooth;}
 body{background:var(--deep);color:var(--text);font-family:'Jost',sans-serif;font-weight:300;overflow-x:hidden;cursor:none;}
 .cursor{position:fixed;width:8px;height:8px;background:var(--gold);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);}
@@ -26,54 +27,6 @@ body{background:var(--deep);color:var(--text);font-family:'Jost',sans-serif;font
 .eq-bar:nth-child(1){animation-delay:0s;}.eq-bar:nth-child(2){animation-delay:.2s;}.eq-bar:nth-child(3){animation-delay:.4s;}
 @keyframes eqAnim{0%,100%{height:4px;}50%{height:14px;}}
 .eq.paused .eq-bar{animation-play-state:paused;height:8px;}
-.section{position:relative;z-index:1;padding:6rem 2rem;max-width:960px;margin:0 auto;}
-.section-label{font-size:.65rem;letter-spacing:.4em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem;text-align:center;}
-.section-title{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,5vw,3.2rem);font-weight:300;text-align:center;color:var(--cream);margin-bottom:3rem;}
-.hero{position:relative;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem;z-index:1;}
-.hero-tag{font-weight:200;font-size:.7rem;letter-spacing:.35em;text-transform:uppercase;color:var(--gold);margin-bottom:2rem;opacity:0;animation:fadeUp .8s .3s ease forwards;}
-.hero-title{font-family:'Cormorant Garamond',serif;font-size:clamp(3.5rem,10vw,7rem);font-weight:300;line-height:1;color:var(--cream);opacity:0;animation:fadeUp .9s .5s ease forwards;}
-.hero-title em{font-style:italic;color:var(--gold-light);}
-.hero-subtitle{font-size:.85rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-top:1.5rem;opacity:0;animation:fadeUp .8s .8s ease forwards;}
-.divider{width:60px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:2.5rem auto;opacity:0;animation:fadeUp .6s 1s ease forwards;}
-.scroll-hint{position:absolute;bottom:2.5rem;left:0;right:0;display:flex;flex-direction:column;align-items:center;gap:.5rem;color:var(--muted);font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;text-align:center;opacity:0;animation:fadeUp .6s 1.5s ease forwards;}
-.scroll-line{width:1px;height:40px;background:linear-gradient(to bottom,var(--gold),transparent);animation:scrollAnim 2s 2s ease-in-out infinite;}
-@keyframes scrollAnim{0%,100%{opacity:.3;transform:scaleY(1);}50%{opacity:1;transform:scaleY(.6);}}
-@keyframes fadeUp{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
-@keyframes bump{0%,100%{transform:scale(1);}50%{transform:scale(1.08);}}
-.reveal{opacity:0;transform:translateY(30px);transition:opacity .7s ease,transform .7s ease;}
-.revealed{opacity:1;transform:translateY(0);}
-.countdown-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:rgba(201,169,110,0.15);border:1px solid rgba(201,169,110,0.15);border-radius:2px;overflow:hidden;margin-bottom:1.5rem;}
-.cd-cell{background:var(--mid);padding:2.5rem 1rem;text-align:center;}
-.cd-num{font-family:'Cormorant Garamond',serif;font-size:clamp(2.5rem,8vw,5rem);font-weight:300;color:var(--gold-light);line-height:1;display:block;}
-.cd-num.bump{animation:bump .15s ease;}
-.cd-label{display:block;font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;color:var(--muted);margin-top:.75rem;}
-.cd-status{text-align:center;font-size:.8rem;color:var(--muted);letter-spacing:.05em;}
-.cd-bar-wrap{background:rgba(201,169,110,0.1);border-radius:99px;height:4px;overflow:hidden;margin:1.5rem 0 .5rem;}
-.cd-bar{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-light));border-radius:99px;transition:width 1s ease;width:0%;}
-.cd-progress-label{text-align:center;font-size:.7rem;color:var(--muted);letter-spacing:.1em;margin-bottom:1rem;}
-.unlock-btn{display:block;margin:2.5rem auto 0;padding:1rem 3rem;background:transparent;border:1px solid var(--gold);color:var(--gold);font-family:'Jost',sans-serif;font-size:.75rem;letter-spacing:.3em;text-transform:uppercase;cursor:none;position:relative;overflow:hidden;transition:color .3s;}
-.unlock-btn::before{content:"";position:absolute;inset:0;background:var(--gold);transform:translateX(-101%);transition:transform .4s cubic-bezier(.77,0,.18,1);z-index:0;}
-.unlock-btn:hover::before{transform:translateX(0);}
-.unlock-btn:hover{color:var(--deep);}
-.unlock-btn span{position:relative;z-index:1;}
-.message-box{background:var(--surface);border:1px solid rgba(201,169,110,0.15);padding:3rem;position:relative;}
-.message-box::before{content:'"';font-family:'Cormorant Garamond',serif;font-size:8rem;color:rgba(201,169,110,0.08);position:absolute;top:-.5rem;left:1.5rem;line-height:1;}
-.message-text{font-family:'Cormorant Garamond',serif;font-size:clamp(1.1rem,3vw,1.4rem);font-style:italic;color:var(--cream);line-height:1.8;text-align:center;position:relative;z-index:1;}
-.message-sig{text-align:center;margin-top:2rem;font-size:.7rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);}
-.chapters-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1px;background:rgba(201,169,110,0.08);border:1px solid rgba(201,169,110,0.08);}
-.chapter-card{background:var(--mid);padding:2rem;position:relative;overflow:hidden;transition:background .3s;cursor:none;text-decoration:none;display:block;color:inherit;}
-.chapter-card:hover{background:var(--surface);}
-.chapter-card::after{content:"";position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);transform:scaleX(0);transition:transform .4s;}
-.chapter-card:hover::after{transform:scaleX(1);}
-.ch-mood{font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:.5rem;display:flex;align-items:center;gap:.5rem;}
-.ch-mood::before{content:"";display:inline-block;width:20px;height:1px;background:var(--gold);}
-.ch-num{font-family:'Cormorant Garamond',serif;font-size:4rem;font-weight:300;color:rgba(201,169,110,0.08);line-height:1;position:absolute;top:1.2rem;right:1.5rem;user-select:none;transition:color .3s;}
-.chapter-card:hover .ch-num{color:rgba(201,169,110,0.18);}
-.ch-title{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:400;color:var(--cream);margin-bottom:.75rem;margin-top:.5rem;}
-.ch-desc{font-size:.78rem;color:var(--muted);line-height:1.7;letter-spacing:.02em;}
-.ch-open{display:inline-flex;align-items:center;gap:.4rem;margin-top:1.5rem;font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);}
-footer{position:relative;z-index:1;text-align:center;padding:3rem 2rem;color:var(--muted);font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid rgba(201,169,110,0.08);}
-footer strong{color:var(--gold);font-weight:400;}
 .ch-page{position:relative;z-index:1;max-width:960px;margin:0 auto;padding:6rem 2rem 4rem;}
 .ch-back{display:inline-flex;align-items:center;gap:.5rem;font-size:.65rem;letter-spacing:.3em;text-transform:uppercase;color:var(--muted);text-decoration:none;margin-bottom:3rem;transition:color .2s;cursor:none;}
 .ch-back:hover{color:var(--gold);}
@@ -85,7 +38,7 @@ footer strong{color:var(--gold);font-weight:400;}
 .ch-next-page span{position:relative;z-index:1;}
 .ch-page-label{font-size:.65rem;letter-spacing:.4em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem;}
 .ch-page-title{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,5vw,3rem);font-weight:300;color:var(--cream);margin-bottom:2.5rem;}
-@media(max-width:600px){.countdown-grid{grid-template-columns:repeat(2,1fr);}.chapters-grid{grid-template-columns:1fr;}}</style>
+</style>
 </head>
 <body>
 <div class="cursor" id="cursor"></div>
@@ -99,42 +52,46 @@ footer strong{color:var(--gold);font-weight:400;}
   <div class="ch-page-label">Chapter 02 — Snapshot</div>
   <h2 class="ch-page-title">Gallery Kita</h2>
 
-  <div id="gallery-wrap" style="background:var(--mid);border:1px solid rgba(201,169,110,0.1);overflow:hidden;margin-bottom:1.5rem;">
-    <div id="gallery-main" style="position:relative;width:100%;background:#000;min-height:320px;display:flex;align-items:center;justify-content:center;">
-      <div id="gallery-placeholder" style="text-align:center;color:var(--muted);padding:3rem;">
-        <div style="font-size:3rem;margin-bottom:1rem;opacity:.2;">📷</div>
-        <p style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1rem;">Belum ada foto. Upload di bawah ✦</p>
-      </div>
-      <img id="gallery-img" style="display:none;width:100%;max-height:420px;object-fit:contain;" />
-      <button id="gallery-prev" onclick="navGallery(-1)" style="display:none;position:absolute;left:1rem;top:50%;transform:translateY(-50%);background:rgba(14,11,18,.7);border:1px solid rgba(201,169,110,0.3);color:var(--gold);width:36px;height:36px;cursor:none;font-size:1rem;">‹</button>
-      <button id="gallery-next" onclick="navGallery(1)" style="display:none;position:absolute;right:1rem;top:50%;transform:translateY(-50%);background:rgba(14,11,18,.7);border:1px solid rgba(201,169,110,0.3);color:var(--gold);width:36px;height:36px;cursor:none;font-size:1rem;">›</button>
-    </div>
-    <div id="gallery-info" style="display:none;padding:1rem 1.5rem;border-top:1px solid rgba(201,169,110,0.08);">
-      <p id="gallery-caption" style="font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--cream);font-size:1rem;"></p>
-      <p id="gallery-counter" style="font-size:.65rem;color:var(--muted);letter-spacing:.15em;margin-top:.25rem;"></p>
-    </div>
-    <div id="gallery-dots" style="display:flex;justify-content:center;gap:.4rem;padding:.75rem;border-top:1px solid rgba(201,169,110,0.06);flex-wrap:wrap;min-height:36px;"></div>
+  <div id="collage-empty" style="text-align:center;padding:4rem 2rem;border:1px dashed rgba(201,169,110,0.15);margin-bottom:1.5rem;">
+    <div style="font-size:3rem;opacity:.15;margin-bottom:1rem;">📷</div>
+    <p style="font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--muted);font-size:1rem;">Belum ada foto. Upload di bawah untuk mulai ✦</p>
   </div>
 
-  <div id="thumbs" style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.5rem;"></div>
+  <div id="collage-header" style="display:none;justify-content:space-between;align-items:center;margin-bottom:.75rem;">
+    <p style="font-size:.65rem;letter-spacing:.25em;text-transform:uppercase;color:var(--gold);" id="collage-count">0 foto</p>
+    <button onclick="clearAll()" style="background:transparent;border:1px solid rgba(181,99,106,0.3);color:var(--rose);font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;padding:.3rem .75rem;cursor:none;font-family:'Jost',sans-serif;transition:all .2s;" onmouseover="this.style.background='rgba(181,99,106,0.08)'" onmouseout="this.style.background='transparent'">Hapus Semua</button>
+  </div>
+
+  <div id="collage-scroll" style="display:none;overflow-y:auto;max-height:600px;padding-right:4px;margin-bottom:1.5rem;">
+    <div id="collage-grid" style="columns:2 160px;gap:8px;"></div>
+  </div>
+
+  <div id="lightbox" style="display:none;position:fixed;inset:0;background:rgba(10,8,16,.95);z-index:400;align-items:center;justify-content:center;flex-direction:column;gap:1rem;padding:2rem;">
+    <button onclick="closeLightbox()" style="position:absolute;top:1.5rem;right:1.5rem;background:none;border:none;color:var(--muted);font-size:1.5rem;cursor:none;line-height:1;" onmouseover="this.style.color='var(--cream)'" onmouseout="this.style.color='var(--muted)'">×</button>
+    <img id="lb-img" style="max-width:90vw;max-height:75vh;object-fit:contain;border:1px solid rgba(201,169,110,0.15);"/>
+    <p id="lb-caption" style="font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--muted);font-size:.95rem;text-align:center;"></p>
+    <div style="display:flex;gap:.75rem;margin-top:.5rem;">
+      <button onclick="lbNav(-1)" style="background:rgba(201,169,110,0.08);border:1px solid rgba(201,169,110,0.2);color:var(--gold);padding:.5rem 1.25rem;cursor:none;font-family:'Jost',sans-serif;font-size:.7rem;letter-spacing:.15em;" onmouseover="this.style.background='rgba(201,169,110,0.15)'" onmouseout="this.style.background='rgba(201,169,110,0.08)'">← Prev</button>
+      <span id="lb-counter" style="font-size:.7rem;color:var(--muted);letter-spacing:.15em;align-self:center;"></span>
+      <button onclick="lbNav(1)" style="background:rgba(201,169,110,0.08);border:1px solid rgba(201,169,110,0.2);color:var(--gold);padding:.5rem 1.25rem;cursor:none;font-family:'Jost',sans-serif;font-size:.7rem;letter-spacing:.15em;" onmouseover="this.style.background='rgba(201,169,110,0.15)'" onmouseout="this.style.background='rgba(201,169,110,0.08)'">Next →</button>
+      <button onclick="deletePhoto(lbIdx)" style="background:rgba(181,99,106,0.08);border:1px solid rgba(181,99,106,0.3);color:var(--rose);padding:.5rem 1.25rem;cursor:none;font-family:'Jost',sans-serif;font-size:.7rem;letter-spacing:.15em;" onmouseover="this.style.background='rgba(181,99,106,0.15)'" onmouseout="this.style.background='rgba(181,99,106,0.08)'">Hapus</button>
+    </div>
+  </div>
 
   <div style="background:var(--surface);border:1px solid rgba(201,169,110,0.12);padding:1.5rem;">
     <p style="font-size:.65rem;letter-spacing:.25em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem;">Upload Foto</p>
-    <label id="upload-zone" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.75rem;padding:2rem;border:1px dashed rgba(201,169,110,0.25);cursor:none;transition:border-color .2s;text-align:center;" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='rgba(201,169,110,0.25)'">
-      <div style="font-size:2rem;opacity:.3;">📁</div>
+    <label id="upload-zone" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.75rem;padding:2rem;border:1px dashed rgba(201,169,110,0.2);cursor:none;transition:border-color .2s,background .2s;text-align:center;" onmouseover="this.style.borderColor='var(--gold)';this.style.background='rgba(201,169,110,0.03)'" onmouseout="this.style.borderColor='rgba(201,169,110,0.2)';this.style.background='transparent'">
+      <div style="font-size:2rem;opacity:.25;">📁</div>
       <p style="font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--muted);font-size:.95rem;">Klik atau drag foto ke sini<br/><span style="font-size:.75rem;">Bisa upload banyak sekaligus</span></p>
       <input type="file" id="file-input" multiple accept="image/*" style="display:none;" onchange="handleFiles(this.files)"/>
     </label>
-    <div style="display:flex;gap:.75rem;margin-top:1rem;">
-      <input id="caption-input" style="flex:1;background:var(--mid);border:1px solid rgba(201,169,110,0.15);color:var(--cream);font-size:.85rem;padding:.65rem 1rem;outline:none;font-family:'Jost',sans-serif;" placeholder="Caption untuk foto yang dipilih (opsional)" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='rgba(201,169,110,0.15)'"/>
-      <button onclick="deleteCurrentPhoto()" style="padding:.65rem 1rem;background:transparent;border:1px solid rgba(181,99,106,0.4);color:var(--rose);font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;cursor:none;font-family:'Jost',sans-serif;transition:all .2s;" onmouseover="this.style.background='rgba(181,99,106,0.1)'" onmouseout="this.style.background='transparent'">Hapus Foto</button>
-    </div>
   </div>
 
   <a href="chapter-3.html" class="ch-next-page"><span>Lanjut ke Chapter 03 ✦</span></a>
 </main>
 
 <button class="music-btn" id="musicBtn"><div class="eq paused" id="eq"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div></button>
+
 <script>
 const cursor=document.getElementById('cursor'),ring=document.getElementById('cursorRing');
 let mx=0,my=0,rx=0,ry=0;
@@ -160,84 +117,101 @@ function startMusic(){ac=new(AudioContext||webkitAudioContext)();gn=ac.createGai
 [261.63,329.63,392,523.25,659.25].forEach((f,i)=>{const o=ac.createOscillator(),og=ac.createGain();o.type='sine';o.frequency.value=f;og.gain.setValueAtTime(0,ac.currentTime);og.gain.linearRampToValueAtTime(1,ac.currentTime+i*.8+1.5);const lf=ac.createOscillator(),lg=ac.createGain();lf.frequency.value=.2+i*.05;lg.gain.value=.5;lf.connect(lg);lg.connect(o.frequency);lf.start();o.connect(og);og.connect(gn);o.start();osc.push({o,lf});});}
 function stopMusic(){if(gn){gn.gain.linearRampToValueAtTime(0,ac.currentTime+1.5);setTimeout(()=>{osc.forEach(x=>{try{x.o.stop();x.lf.stop();}catch(e){}});ac.close();},1600);}}
 mb.addEventListener('click',()=>{pl=!pl;if(pl){startMusic();eq.classList.remove('paused');showToast('♪ Musik menyala');}else{stopMusic();eq.classList.add('paused');showToast('♪ Musik dimatikan');}});
-document.querySelectorAll('.reveal').forEach(el=>new IntersectionObserver(([e])=>{if(e.isIntersecting)el.classList.add('revealed');},{threshold:.1}).observe(el));
 </script>
+
 <script>
-let photos=[],curIdx=0;
+let photos=[], lbIdx=0;
 
-function loadPhotos(){
+function load(){
   try{photos=JSON.parse(localStorage.getItem('gallery_photos')||'[]');}catch(e){photos=[];}
-  renderGallery();
+  render();
 }
 
-function renderGallery(){
-  const ph=document.getElementById('gallery-placeholder');
-  const img=document.getElementById('gallery-img');
-  const info=document.getElementById('gallery-info');
-  const prev=document.getElementById('gallery-prev');
-  const next=document.getElementById('gallery-next');
-  const dots=document.getElementById('gallery-dots');
-  const thumbs=document.getElementById('thumbs');
+function save(){
+  try{localStorage.setItem('gallery_photos',JSON.stringify(photos));}
+  catch(e){showToast('Penyimpanan penuh');}
+}
 
+function render(){
+  const empty=document.getElementById('collage-empty');
+  const header=document.getElementById('collage-header');
+  const scroll=document.getElementById('collage-scroll');
+  const grid=document.getElementById('collage-grid');
   if(!photos.length){
-    ph.style.display='flex';img.style.display='none';
-    info.style.display='none';prev.style.display='none';next.style.display='none';
-    dots.innerHTML='';thumbs.innerHTML='';return;
+    empty.style.display='block';header.style.display='none';scroll.style.display='none';return;
   }
-  if(curIdx>=photos.length)curIdx=photos.length-1;
-  ph.style.display='none';img.style.display='block';
-  img.src=photos[curIdx].src;
-  document.getElementById('gallery-caption').textContent=photos[curIdx].caption||'';
-  document.getElementById('gallery-counter').textContent=(curIdx+1)+' dari '+photos.length+' foto';
-  info.style.display='block';
-  prev.style.display=photos.length>1?'block':'none';
-  next.style.display=photos.length>1?'block':'none';
-
-  dots.innerHTML=photos.map((_,i)=>`<div onclick="goTo(${i})" style="width:7px;height:7px;border-radius:50%;background:${i===curIdx?'var(--gold)':'rgba(201,169,110,0.2)'};cursor:none;transition:background .2s,transform .2s;transform:scale(${i===curIdx?1.4:1})"></div>`).join('');
-
-  thumbs.innerHTML=photos.map((p,i)=>`<div onclick="goTo(${i})" style="width:64px;height:64px;border:2px solid ${i===curIdx?'var(--gold)':'transparent'};cursor:none;flex-shrink:0;overflow:hidden;transition:border-color .2s;">
-    <img src="${p.src}" style="width:100%;height:100%;object-fit:cover;"/>
-  </div>`).join('');
+  empty.style.display='none';header.style.display='flex';scroll.style.display='block';
+  document.getElementById('collage-count').textContent=photos.length+' foto';
+  grid.innerHTML=photos.map((p,i)=>`
+    <div style="break-inside:avoid;margin-bottom:8px;position:relative;overflow:hidden;cursor:none;" onclick="openLightbox(${i})">
+      <img src="${p.src}" style="width:100%;display:block;transition:transform .35s ease;" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'"/>
+      <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(14,11,18,.75) 0%,transparent 55%);opacity:0;transition:opacity .3s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0'">
+        <div style="position:absolute;bottom:0;left:0;right:0;padding:.6rem .75rem;display:flex;justify-content:space-between;align-items:flex-end;">
+          <span style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.8rem;color:var(--cream);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${p.caption||''}</span>
+          <button onclick="event.stopPropagation();deletePhoto(${i})" style="background:rgba(181,99,106,0.85);border:none;color:#fff;font-size:.58rem;letter-spacing:.1em;padding:.3rem .5rem;cursor:none;font-family:'Jost',sans-serif;flex-shrink:0;margin-left:.5rem;" onmouseover="this.style.background='var(--rose)'" onmouseout="this.style.background='rgba(181,99,106,0.85)'">✕ Hapus</button>
+        </div>
+      </div>
+    </div>`).join('');
 }
 
-function goTo(i){curIdx=i;renderGallery();}
-function navGallery(d){curIdx=(curIdx+d+photos.length)%photos.length;renderGallery();}
+function deletePhoto(i){
+  photos.splice(i,1);save();
+  if(document.getElementById('lightbox').style.display!=='none'){
+    if(!photos.length){closeLightbox();}
+    else{lbIdx=Math.min(lbIdx,photos.length-1);updateLightbox();}
+  }
+  render();showToast('Foto dihapus ✦');
+}
+
+function clearAll(){
+  if(!confirm('Hapus semua foto?'))return;
+  photos=[];save();render();closeLightbox();showToast('Semua foto dihapus');
+}
+
+function openLightbox(i){
+  lbIdx=i;
+  document.getElementById('lightbox').style.display='flex';
+  updateLightbox();
+}
+
+function updateLightbox(){
+  const p=photos[lbIdx];
+  document.getElementById('lb-img').src=p.src;
+  document.getElementById('lb-caption').textContent=p.caption||'';
+  document.getElementById('lb-counter').textContent=(lbIdx+1)+' / '+photos.length;
+}
+
+function lbNav(d){lbIdx=(lbIdx+d+photos.length)%photos.length;updateLightbox();}
+function closeLightbox(){document.getElementById('lightbox').style.display='none';}
+
+document.getElementById('lightbox').addEventListener('click',function(e){if(e.target===this)closeLightbox();});
+document.addEventListener('keydown',e=>{
+  if(document.getElementById('lightbox').style.display!=='none'){
+    if(e.key==='ArrowLeft')lbNav(-1);
+    if(e.key==='ArrowRight')lbNav(1);
+    if(e.key==='Escape')closeLightbox();
+  }
+});
 
 function handleFiles(files){
-  const arr=Array.from(files);
-  let loaded=0;
+  const arr=Array.from(files);let done=0;
   arr.forEach(file=>{
-    const reader=new FileReader();
-    reader.onload=e=>{
-      photos.push({src:e.target.result,caption:document.getElementById('caption-input').value.trim()});
-      loaded++;
-      if(loaded===arr.length){
-        savePhotos();curIdx=photos.length-1;renderGallery();
-        showToast(arr.length+' foto ditambahkan ✦');
-      }
+    const r=new FileReader();
+    r.onload=e=>{
+      photos.push({src:e.target.result,caption:''});
+      if(++done===arr.length){save();render();showToast(arr.length+' foto ditambahkan ✦');}
     };
-    reader.readAsDataURL(file);
+    r.readAsDataURL(file);
   });
 }
 
-function savePhotos(){
-  try{localStorage.setItem('gallery_photos',JSON.stringify(photos));}
-  catch(e){showToast('Penyimpanan penuh, beberapa foto mungkin tidak tersimpan');}
-}
+const uz=document.getElementById('upload-zone');
+uz.addEventListener('click',()=>document.getElementById('file-input').click());
+uz.addEventListener('dragover',e=>{e.preventDefault();uz.style.borderColor='var(--gold)';uz.style.background='rgba(201,169,110,0.05)';});
+uz.addEventListener('dragleave',()=>{uz.style.borderColor='rgba(201,169,110,0.2)';uz.style.background='transparent';});
+uz.addEventListener('drop',e=>{e.preventDefault();uz.style.borderColor='rgba(201,169,110,0.2)';uz.style.background='transparent';handleFiles(e.dataTransfer.files);});
 
-function deleteCurrentPhoto(){
-  if(!photos.length)return;
-  photos.splice(curIdx,1);
-  if(curIdx>=photos.length&&curIdx>0)curIdx--;
-  savePhotos();renderGallery();showToast('Foto dihapus');
-}
-
-document.getElementById('upload-zone').addEventListener('click',()=>document.getElementById('file-input').click());
-document.getElementById('upload-zone').addEventListener('dragover',e=>{e.preventDefault();document.getElementById('upload-zone').style.borderColor='var(--gold)';});
-document.getElementById('upload-zone').addEventListener('dragleave',()=>{document.getElementById('upload-zone').style.borderColor='rgba(201,169,110,0.25)';});
-document.getElementById('upload-zone').addEventListener('drop',e=>{e.preventDefault();document.getElementById('upload-zone').style.borderColor='rgba(201,169,110,0.25)';handleFiles(e.dataTransfer.files);});
-document.addEventListener('keydown',e=>{if(photos.length){if(e.key==='ArrowLeft')navGallery(-1);if(e.key==='ArrowRight')navGallery(1);}});
-loadPhotos();
+load();
 </script>
 </body>
 </html>
