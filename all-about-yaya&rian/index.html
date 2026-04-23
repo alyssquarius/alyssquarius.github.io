@@ -124,6 +124,44 @@ footer strong{color:var(--gold);font-weight:400;}
 <section class="section reveal">
   <div class="section-label">Together</div>
   <h2 class="section-title">You can open any of them you want, babygirl</h2>
+  <style>
+  .chapter-card.locked {
+    opacity: 0.4;
+    pointer-events: none;
+    cursor: not-allowed;
+  }
+  .chapter-card.locked .ch-open {
+    display: none;
+  }
+  .ch-lock-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    margin-top: 1.5rem;
+    font-size: .62rem;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--rose);
+    opacity: .7;
+  }
+</style>
+
+<div class="chapters-grid">
+  <a href="pages/chapter-1.html" class="chapter-card">
+    ...
+    <span class="ch-open">✦ Buka Chapter</span>
+  </a>
+
+  <!-- LOCKED: hapus href, tambah class locked -->
+  <a class="chapter-card locked">
+    ...
+    <span class="ch-open">✦ Buka Chapter</span>
+    <span class="ch-lock-badge">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      Terkunci
+    </span>
+  </a>
+<!-- </div>
   <div class="chapters-grid">
     <a href="pages/chapter-1.html" class="chapter-card"><div class="ch-mood">Feelings</div><div class="ch-num">01</div><h3 class="ch-title">Ungkapkan Perasaan</h3><p class="ch-desc">Tempat ayang atau rian untuk mencurahkan perasaan hehe.</p><span class="ch-open">✦ Open</span></a>
     <a href="pages/chapter-2.html" class="chapter-card"><div class="ch-mood">Gallery</div><div class="ch-num">02</div><h3 class="ch-title">Galeri Kita</h3><p class="ch-desc">Upload dan simpan foto kenangan kita bersama.</p><span class="ch-open">✦ Open</span></a>
@@ -131,7 +169,7 @@ footer strong{color:var(--gold);font-weight:400;}
     <a href="pages/chapter-4.html" class="chapter-card"><div class="ch-mood">Coupon</div><div class="ch-num">04</div><h3 class="ch-title">Kupon Buat Ayang</h3><p class="ch-desc">Kupon spesial buat ayang dengan cooldown 1 bulan untuk 1 kali pemakaian bleee.</p><span class="ch-open">✦ Open</span></a>
     <a href="pages/chapter-5.html" class="chapter-card"><div class="ch-mood">Video</div><div class="ch-num">05</div><h3 class="ch-title">Video Kebersamaan</h3><p class="ch-desc">Ayang atau Rian bisa upload video kita disini, buat kenang-kenangan lucuk.</p><span class="ch-open">✦ Open</span></a>
     <a href="pages/chapter-6.html" class="chapter-card"><div class="ch-mood">Letter</div><div class="ch-num">06</div><h3 class="ch-title">Surat Buat Ayang Hihihihi</h3><p class="ch-desc">yahahaha hayuk, kalo kepo buka aja yaa ayang :p</p><span class="ch-open">✦ Open</span></a>
-  </div>
+  </div> -->
 </section>
 <!-- <footer>Dibuat dengan &thinsp;<strong>❤</strong>&thinsp; • Hanya untuk&thinsp;<strong>Yaya</strong></footer> -->
 
