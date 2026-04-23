@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Chapter 01 — Time Capsule</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@200;300;400&display=swap" rel="stylesheet"/>
+<style>*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{--gold:#C9A96E;--gold-light:#E8D5A3;--rose:#B5636A;--rose-dark:#7A3B40;--deep:#0E0B12;--mid:#1A1425;--surface:#231B30;--card:#2A2040;--cream:#F5EDD9;--text:#EDE4D3;--muted:#9B8FA0;}
+html{scroll-behavior:smooth;}
+body{background:var(--deep);color:var(--text);font-family:'Jost',sans-serif;font-weight:300;overflow-x:hidden;cursor:none;}
+.cursor{position:fixed;width:8px;height:8px;background:var(--gold);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);}
+.cursor-ring{position:fixed;width:30px;height:30px;border:1px solid rgba(201,169,110,0.4);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:all .12s ease-out;}
+#starCanvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;}
+.sparkle{position:fixed;pointer-events:none;z-index:9997;font-size:16px;animation:sparklePop .6s ease forwards;}
+@keyframes sparklePop{0%{opacity:1;transform:scale(0) rotate(-20deg);}50%{opacity:1;transform:scale(1.2) rotate(10deg);}100%{opacity:0;transform:scale(.8) rotate(20deg) translateY(-30px);}}
+.toast{position:fixed;bottom:5rem;left:50%;transform:translateX(-50%) translateY(20px);background:var(--surface);border:1px solid rgba(201,169,110,0.25);color:var(--cream);padding:.75rem 1.5rem;font-size:.75rem;letter-spacing:.1em;opacity:0;transition:all .3s;pointer-events:none;z-index:200;white-space:nowrap;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.petals-container{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+.petal{position:absolute;top:-40px;border-radius:60% 40% 60% 40%;animation:petalFall linear infinite;opacity:0;}
+@keyframes petalFall{0%{transform:translateY(0) rotate(0deg);opacity:0;}5%{opacity:1;}90%{opacity:.5;}100%{transform:translateY(110vh) rotate(720deg);opacity:0;}}
+.music-btn{position:fixed;bottom:2rem;right:2rem;width:44px;height:44px;background:var(--surface);border:1px solid rgba(201,169,110,0.3);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:none;z-index:100;transition:all .2s;}
+.music-btn:hover{background:rgba(201,169,110,0.15);border-color:var(--gold);}
+.eq{display:flex;gap:2px;align-items:flex-end;height:16px;}
+.eq-bar{width:3px;background:var(--gold);border-radius:1px;animation:eqAnim 1s ease-in-out infinite;}
+.eq-bar:nth-child(1){animation-delay:0s;}.eq-bar:nth-child(2){animation-delay:.2s;}.eq-bar:nth-child(3){animation-delay:.4s;}
+@keyframes eqAnim{0%,100%{height:4px;}50%{height:14px;}}
+.eq.paused .eq-bar{animation-play-state:paused;height:8px;}
+.section{position:relative;z-index:1;padding:6rem 2rem;max-width:960px;margin:0 auto;}
+.section-label{font-size:.65rem;letter-spacing:.4em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem;text-align:center;}
+.section-title{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,5vw,3.2rem);font-weight:300;text-align:center;color:var(--cream);margin-bottom:3rem;}
+.hero{position:relative;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem;z-index:1;}
+.hero-tag{font-weight:200;font-size:.7rem;letter-spacing:.35em;text-transform:uppercase;color:var(--gold);margin-bottom:2rem;opacity:0;animation:fadeUp .8s .3s ease forwards;}
+.hero-title{font-family:'Cormorant Garamond',serif;font-size:clamp(3.5rem,10vw,7rem);font-weight:300;line-height:1;color:var(--cream);opacity:0;animation:fadeUp .9s .5s ease forwards;}
+.hero-title em{font-style:italic;color:var(--gold-light);}
+.hero-subtitle{font-size:.85rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-top:1.5rem;opacity:0;animation:fadeUp .8s .8s ease forwards;}
+.divider{width:60px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:2.5rem auto;opacity:0;animation:fadeUp .6s 1s ease forwards;}
+.scroll-hint{position:absolute;bottom:2.5rem;left:0;right:0;display:flex;flex-direction:column;align-items:center;gap:.5rem;color:var(--muted);font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;text-align:center;opacity:0;animation:fadeUp .6s 1.5s ease forwards;}
+.scroll-line{width:1px;height:40px;background:linear-gradient(to bottom,var(--gold),transparent);animation:scrollAnim 2s 2s ease-in-out infinite;}
+@keyframes scrollAnim{0%,100%{opacity:.3;transform:scaleY(1);}50%{opacity:1;transform:scaleY(.6);}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
+@keyframes bump{0%,100%{transform:scale(1);}50%{transform:scale(1.08);}}
+.reveal{opacity:0;transform:translateY(30px);transition:opacity .7s ease,transform .7s ease;}
+.revealed{opacity:1;transform:translateY(0);}
+.countdown-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:rgba(201,169,110,0.15);border:1px solid rgba(201,169,110,0.15);border-radius:2px;overflow:hidden;margin-bottom:1.5rem;}
+.cd-cell{background:var(--mid);padding:2.5rem 1rem;text-align:center;}
+.cd-num{font-family:'Cormorant Garamond',serif;font-size:clamp(2.5rem,8vw,5rem);font-weight:300;color:var(--gold-light);line-height:1;display:block;}
+.cd-num.bump{animation:bump .15s ease;}
+.cd-label{display:block;font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;color:var(--muted);margin-top:.75rem;}
+.cd-status{text-align:center;font-size:.8rem;color:var(--muted);letter-spacing:.05em;}
+.cd-bar-wrap{background:rgba(201,169,110,0.1);border-radius:99px;height:4px;overflow:hidden;margin:1.5rem 0 .5rem;}
+.cd-bar{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-light));border-radius:99px;transition:width 1s ease;width:0%;}
+.cd-progress-label{text-align:center;font-size:.7rem;color:var(--muted);letter-spacing:.1em;margin-bottom:1rem;}
+.unlock-btn{display:block;margin:2.5rem auto 0;padding:1rem 3rem;background:transparent;border:1px solid var(--gold);color:var(--gold);font-family:'Jost',sans-serif;font-size:.75rem;letter-spacing:.3em;text-transform:uppercase;cursor:none;position:relative;overflow:hidden;transition:color .3s;}
+.unlock-btn::before{content:"";position:absolute;inset:0;background:var(--gold);transform:translateX(-101%);transition:transform .4s cubic-bezier(.77,0,.18,1);z-index:0;}
+.unlock-btn:hover::before{transform:translateX(0);}
+.unlock-btn:hover{color:var(--deep);}
+.unlock-btn span{position:relative;z-index:1;}
+.message-box{background:var(--surface);border:1px solid rgba(201,169,110,0.15);padding:3rem;position:relative;}
+.message-box::before{content:'"';font-family:'Cormorant Garamond',serif;font-size:8rem;color:rgba(201,169,110,0.08);position:absolute;top:-.5rem;left:1.5rem;line-height:1;}
+.message-text{font-family:'Cormorant Garamond',serif;font-size:clamp(1.1rem,3vw,1.4rem);font-style:italic;color:var(--cream);line-height:1.8;text-align:center;position:relative;z-index:1;}
+.message-sig{text-align:center;margin-top:2rem;font-size:.7rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);}
+.chapters-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1px;background:rgba(201,169,110,0.08);border:1px solid rgba(201,169,110,0.08);}
+.chapter-card{background:var(--mid);padding:2rem;position:relative;overflow:hidden;transition:background .3s;cursor:none;text-decoration:none;display:block;color:inherit;}
+.chapter-card:hover{background:var(--surface);}
+.chapter-card::after{content:"";position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);transform:scaleX(0);transition:transform .4s;}
+.chapter-card:hover::after{transform:scaleX(1);}
+.ch-mood{font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:.5rem;display:flex;align-items:center;gap:.5rem;}
+.ch-mood::before{content:"";display:inline-block;width:20px;height:1px;background:var(--gold);}
+.ch-num{font-family:'Cormorant Garamond',serif;font-size:4rem;font-weight:300;color:rgba(201,169,110,0.08);line-height:1;position:absolute;top:1.2rem;right:1.5rem;user-select:none;transition:color .3s;}
+.chapter-card:hover .ch-num{color:rgba(201,169,110,0.18);}
+.ch-title{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:400;color:var(--cream);margin-bottom:.75rem;margin-top:.5rem;}
+.ch-desc{font-size:.78rem;color:var(--muted);line-height:1.7;letter-spacing:.02em;}
+.ch-open{display:inline-flex;align-items:center;gap:.4rem;margin-top:1.5rem;font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);}
+footer{position:relative;z-index:1;text-align:center;padding:3rem 2rem;color:var(--muted);font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid rgba(201,169,110,0.08);}
+footer strong{color:var(--gold);font-weight:400;}
+.ch-page{position:relative;z-index:1;max-width:960px;margin:0 auto;padding:6rem 2rem 4rem;}
+.ch-back{display:inline-flex;align-items:center;gap:.5rem;font-size:.65rem;letter-spacing:.3em;text-transform:uppercase;color:var(--muted);text-decoration:none;margin-bottom:3rem;transition:color .2s;cursor:none;}
+.ch-back:hover{color:var(--gold);}
+.ch-back::before{content:'←';}
+.ch-next-page{display:block;margin:3rem auto 0;padding:1rem 3rem;background:transparent;border:1px solid var(--gold);color:var(--gold);font-family:'Jost',sans-serif;font-size:.75rem;letter-spacing:.3em;text-transform:uppercase;cursor:none;position:relative;overflow:hidden;transition:color .3s;text-decoration:none;text-align:center;width:fit-content;}
+.ch-next-page::before{content:"";position:absolute;inset:0;background:var(--gold);transform:translateX(-101%);transition:transform .4s cubic-bezier(.77,0,.18,1);z-index:0;}
+.ch-next-page:hover::before{transform:translateX(0);}
+.ch-next-page:hover{color:var(--deep);}
+.ch-next-page span{position:relative;z-index:1;}
+.ch-page-label{font-size:.65rem;letter-spacing:.4em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem;}
+.ch-page-title{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,5vw,3rem);font-weight:300;color:var(--cream);margin-bottom:2.5rem;}
+@media(max-width:600px){.countdown-grid{grid-template-columns:repeat(2,1fr);}.chapters-grid{grid-template-columns:1fr;}}</style>
+</head>
+<body>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+<canvas id="starCanvas"></canvas>
+<div class="petals-container" id="petals"></div>
+<div class="toast" id="toast"></div>
+
+<main class="ch-page">
+  <a href="../index.html" class="ch-back">Kembali</a>
+  <div class="ch-page-label">Chapter 01 — Warm Start</div>
+  <h2 class="ch-page-title">Time Capsule</h2>
+  <p style="font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--muted);text-align:center;margin-bottom:2rem;font-size:1rem;line-height:1.7;">Tulis momen atau perasaan yang ingin kamu simpan bersama. Semua tersimpan dan bisa dibaca kapanpun ✦</p>
+  <div style="display:flex;flex-direction:column;gap:.75rem;margin-bottom:2rem;">
+    <textarea id="capsule-text" style="background:var(--mid);border:1px solid rgba(201,169,110,0.2);color:var(--cream);font-family:'Cormorant Garamond',serif;font-size:1.1rem;padding:1rem 1.25rem;resize:vertical;min-height:120px;outline:none;transition:border-color .2s;width:100%;" placeholder="Tulis sesuatu yang ingin kamu ingat selalu..." onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='rgba(201,169,110,0.2)'"></textarea>
+    <input id="capsule-name" style="background:var(--mid);border:1px solid rgba(201,169,110,0.15);color:var(--cream);font-family:'Jost',sans-serif;font-size:.85rem;padding:.7rem 1rem;outline:none;width:100%;transition:border-color .2s;" placeholder="Nama kamu (opsional)" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='rgba(201,169,110,0.15)'"/>
+    <button onclick="saveCapsule()" style="padding:.9rem;background:transparent;border:1px solid var(--gold);color:var(--gold);font-family:'Jost',sans-serif;font-size:.75rem;letter-spacing:.25em;text-transform:uppercase;cursor:none;position:relative;overflow:hidden;transition:color .3s;" onmouseover="this.style.background='var(--gold)';this.style.color='var(--deep)'" onmouseout="this.style.background='transparent';this.style.color='var(--gold)'">✦ Simpan ke Kapsul</button>
+  </div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;padding-bottom:.75rem;border-bottom:1px solid rgba(201,169,110,0.1);">
+    <p style="font-size:.65rem;letter-spacing:.25em;text-transform:uppercase;color:var(--gold);">Kapsul Tersimpan</p>
+    <p style="font-size:.65rem;color:var(--muted);" id="capsule-count">0 pesan</p>
+  </div>
+  <div id="capsule-entries" style="display:flex;flex-direction:column;gap:.75rem;">
+    <p style="font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--muted);text-align:center;padding:2rem;font-size:1rem;">Belum ada yang tersimpan. Jadilah yang pertama menulis ✦</p>
+  </div>
+  <a href="chapter-2.html" class="ch-next-page"><span>Lanjut ke Chapter 02 ✦</span></a>
+</main>
+
+<button class="music-btn" id="musicBtn"><div class="eq paused" id="eq"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div></button>
+<script>
+const cursor=document.getElementById('cursor'),ring=document.getElementById('cursorRing');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cursor.style.left=mx+'px';cursor.style.top=my+'px';});
+(function a(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(a);})();
+const sp=['✦','✧','★','✸','✺'];
+document.addEventListener('click',e=>{const el=document.createElement('div');el.className='sparkle';el.textContent=sp[Math.floor(Math.random()*sp.length)];el.style.left=e.clientX+'px';el.style.top=e.clientY+'px';el.style.color=`hsl(${38+Math.random()*20},${60+Math.random()*30}%,${60+Math.random()*20}%)`;document.body.appendChild(el);setTimeout(()=>el.remove(),700);});
+const cv=document.getElementById('starCanvas'),cx=cv.getContext('2d');let W,H,stars=[],ss=[];
+function ic(){W=cv.width=innerWidth;H=cv.height=innerHeight;stars=Array.from({length:200},()=>({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.2+.2,a:Math.random(),sp:Math.random()*.003+.001,ph:Math.random()*Math.PI*2}));}
+function ds(t){cx.clearRect(0,0,W,H);for(const s of stars){const al=s.a*(.5+.5*Math.sin(t*s.sp*60+s.ph));cx.beginPath();cx.arc(s.x,s.y,s.r,0,Math.PI*2);cx.fillStyle=`rgba(232,213,163,${al})`;cx.fill();}
+for(let i=ss.length-1;i>=0;i--){const s=ss[i];s.x+=s.vx;s.y+=s.vy;s.life--;const al=s.life/s.ml,g=cx.createLinearGradient(s.x,s.y,s.x-s.vx*12,s.y-s.vy*12);g.addColorStop(0,`rgba(232,213,163,${al})`);g.addColorStop(1,'rgba(232,213,163,0)');cx.beginPath();cx.strokeStyle=g;cx.lineWidth=1.5;cx.moveTo(s.x,s.y);cx.lineTo(s.x-s.vx*12,s.y-s.vy*12);cx.stroke();if(s.life<=0)ss.splice(i,1);}
+if(Math.random()<.004&&ss.length<3){const a=-Math.PI/6+(Math.random()-.5)*.4;ss.push({x:Math.random()*W,y:Math.random()*H*.5,vx:Math.cos(a)*8,vy:Math.sin(a)*8+4,life:60,ml:60});}
+requestAnimationFrame(ds);}
+ic();addEventListener('resize',ic);requestAnimationFrame(ds);
+const pc=document.getElementById('petals');
+function cp(){const p=document.createElement('div');p.className='petal';const sz=4+Math.random()*6;p.style.left=Math.random()*100+'vw';p.style.width=sz+'px';p.style.height=(sz*1.4)+'px';p.style.background=`rgba(${181+Math.random()*20},${99+Math.random()*20},${106+Math.random()*10},.4)`;const dur=8+Math.random()*8;p.style.animationDuration=dur+'s';p.style.animationDelay=Math.random()*5+'s';pc.appendChild(p);setTimeout(()=>p.remove(),(dur+5)*1000);}
+setInterval(cp,600);for(let i=0;i<8;i++)cp();
+const toastEl=document.getElementById('toast');let tt;
+function showToast(m){toastEl.textContent=m;toastEl.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>toastEl.classList.remove('show'),3000);}
+const mb=document.getElementById('musicBtn'),eq=document.getElementById('eq');
+let ac,gn,pl=false,osc=[];
+function startMusic(){ac=new(AudioContext||webkitAudioContext)();gn=ac.createGain();gn.gain.setValueAtTime(0,ac.currentTime);gn.gain.linearRampToValueAtTime(.05,ac.currentTime+2);gn.connect(ac.destination);
+[261.63,329.63,392,523.25,659.25].forEach((f,i)=>{const o=ac.createOscillator(),og=ac.createGain();o.type='sine';o.frequency.value=f;og.gain.setValueAtTime(0,ac.currentTime);og.gain.linearRampToValueAtTime(1,ac.currentTime+i*.8+1.5);const lf=ac.createOscillator(),lg=ac.createGain();lf.frequency.value=.2+i*.05;lg.gain.value=.5;lf.connect(lg);lg.connect(o.frequency);lf.start();o.connect(og);og.connect(gn);o.start();osc.push({o,lf});});}
+function stopMusic(){if(gn){gn.gain.linearRampToValueAtTime(0,ac.currentTime+1.5);setTimeout(()=>{osc.forEach(x=>{try{x.o.stop();x.lf.stop();}catch(e){}});ac.close();},1600);}}
+mb.addEventListener('click',()=>{pl=!pl;if(pl){startMusic();eq.classList.remove('paused');showToast('♪ Musik menyala');}else{stopMusic();eq.classList.add('paused');showToast('♪ Musik dimatikan');}});
+document.querySelectorAll('.reveal').forEach(el=>new IntersectionObserver(([e])=>{if(e.isIntersecting)el.classList.add('revealed');},{threshold:.1}).observe(el));
+</script>
+<script>
+function loadEntries(){
+  const saved=JSON.parse(localStorage.getItem('capsule_entries')||'[]');
+  const c=document.getElementById('capsule-entries');
+  document.getElementById('capsule-count').textContent=saved.length+' pesan';
+  if(!saved.length){c.innerHTML='<p style="font-family:\'Cormorant Garamond\',serif;font-style:italic;color:var(--muted);text-align:center;padding:2rem;font-size:1rem;">Belum ada yang tersimpan. Jadilah yang pertama menulis ✦</p>';return;}
+  c.innerHTML='';
+  saved.forEach((e,i)=>{
+    const el=document.createElement('div');
+    el.style.cssText='background:var(--surface);border-left:2px solid var(--gold);padding:1rem 1.25rem;';
+    el.innerHTML=`<div style="font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);margin-bottom:.4rem;">${e.name||'Anonim'}</div>
+    <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1rem;color:var(--cream);line-height:1.6;">${e.text}</div>
+    <div style="display:flex;justify-content:space-between;margin-top:.5rem;">
+      <span style="font-size:.65rem;color:var(--muted);letter-spacing:.1em;">${e.date}</span>
+      <button onclick="deleteEntry(${i})" style="background:none;border:none;color:var(--muted);font-size:.65rem;cursor:none;font-family:'Jost',sans-serif;letter-spacing:.1em;" onmouseover="this.style.color='var(--rose)'" onmouseout="this.style.color='var(--muted)'">× Hapus</button>
+    </div>`;
+    c.appendChild(el);
+  });
+}
+function saveCapsule(){
+  const txt=document.getElementById('capsule-text').value.trim();
+  const name=document.getElementById('capsule-name').value.trim();
+  if(!txt)return;
+  const saved=JSON.parse(localStorage.getItem('capsule_entries')||'[]');
+  const now=new Date().toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  saved.unshift({text:txt,name,date:now});
+  localStorage.setItem('capsule_entries',JSON.stringify(saved));
+  document.getElementById('capsule-text').value='';
+  loadEntries();showToast('Tersimpan di kapsul waktu ✦');
+}
+function deleteEntry(i){
+  const saved=JSON.parse(localStorage.getItem('capsule_entries')||'[]');
+  saved.splice(i,1);localStorage.setItem('capsule_entries',JSON.stringify(saved));
+  loadEntries();showToast('Pesan dihapus');
+}
+loadEntries();
+</script>
+</body>
+</html>
