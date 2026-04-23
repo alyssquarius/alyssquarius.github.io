@@ -123,13 +123,13 @@ footer strong{color:var(--gold);font-weight:400;}
 
 <section class="section reveal">
   <div class="section-label">Together</div>
-  <h2 class="section-title">"You can open any of them you want, my babygirll"</h2>
+  <h2 class="section-title">You can open any of them you want, babygirl</h2>
   <div class="chapters-grid">
     <a href="pages/chapter-1.html" class="chapter-card"><div class="ch-mood">Feelings</div><div class="ch-num">01</div><h3 class="ch-title">Ungkapkan Perasaan</h3><p class="ch-desc">Tempat ayang atau rian untuk mencurahkan perasaan hehe.</p><span class="ch-open">✦ Open</span></a>
     <a href="pages/chapter-2.html" class="chapter-card"><div class="ch-mood">Gallery</div><div class="ch-num">02</div><h3 class="ch-title">Gallery Kita</h3><p class="ch-desc">Upload dan simpan foto kenangan kita bersama.</p><span class="ch-open">✦ Open</span></a>
     <a href="pages/chapter-3.html" class="chapter-card"><div class="ch-mood">Soft Talk</div><div class="ch-num">03</div><h3 class="ch-title">Alasan</h3><p class="ch-desc">Semua alasan kenapa aku sayang kamu. Tap untuk buka.</p><span class="ch-open">✦ Open</span></a>
     <a href="pages/chapter-4.html" class="chapter-card"><div class="ch-mood">Coupon</div><div class="ch-num">04</div><h3 class="ch-title">Coupon Buat Ayang</h3><p class="ch-desc">Kupon spesial buat ayang dengan cooldown 1 bulan tiap kupon.</p><span class="ch-open">✦ Open</span></a>
-    <a href="pages/chapter-5.html" class="chapter-card"><div class="ch-mood">Video</div><div class="ch-num">05</div><h3 class="ch-title">Video Kebersamaan</h3><p class="ch-desc">Tonton video kenangan kita di layar theater.</p><span class="ch-open">✦ Open</span></a>
+    <a href="pages/chapter-5.html" class="chapter-card"><div class="ch-mood">Video</div><div class="ch-num">05</div><h3 class="ch-title">Video Kebersamaan</h3><p class="ch-desc">Ayang atau Rian bisa upload video kita disini, buat kenang-kenangan lucuk</p><span class="ch-open">✦ Open</span></a>
     <a href="pages/chapter-6.html" class="chapter-card"><div class="ch-mood">Letter</div><div class="ch-num">06</div><h3 class="ch-title">Surat Buat Ayang Hihihihi</h3><p class="ch-desc">yahahaha hayuk, kalo kepo buka aja yaa ayang :p</p><span class="ch-open">✦ Open</span></a>
   </div>
 </section>
@@ -179,7 +179,7 @@ function tick(){
   const pct=Math.min(100,(diff/YEAR)*100);
   document.getElementById('cd-bar').style.width=pct.toFixed(2)+'%';
   const days=Math.floor(diff/86400000),mo=Math.floor(days/30);
-  document.getElementById('cd-progress-label').textContent=mo<1?days+' hari bersama ✦':mo<12?mo+' bulan bersama — setiap detiknya berharga ✦':Math.floor(mo/12)+' years '+(mo%12>0?mo%12+' month ':'')+' together ✦';
+  document.getElementById('cd-progress-label').textContent=mo<1?days+' hari bersama ✦':mo<12?mo+' bulan bersama — setiap detiknya berharga ✦':Math.floor(mo/12)+' Years '+(mo%12>0?mo%12+' Months ':'')+' together ✦';
 }
 tick();setInterval(tick,1000);
 const btn=document.getElementById('unlockBtn');
