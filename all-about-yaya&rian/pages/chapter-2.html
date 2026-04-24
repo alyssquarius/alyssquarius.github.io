@@ -203,21 +203,22 @@ mb.addEventListener('click',()=>{pl=!pl;if(pl){startMusic();eq.classList.remove(
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const SUPABASE_URL = 'https://urznpphqbdmwgnbhrzdi.supabase.co';  // ← ganti
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVyem5wcGhxYmRtd2duYmhyemRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY5NjczNTYsImV4cCI6MjA5MjU0MzM1Nn0.0kymrIh-8qrl68bDtZqjkI7Ke5mQLrH280zWfzF6UQ8';    // ← ganti anon key
+const SUPABASE_URL = 'https://urznpphqbdmwgnbhrzdi.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVyem5wcGhxYmRtd2duYmhyemRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY5NjczNTYsImV4cCI6MjA5MjU0MzM1Nn0.0kymrIh-8qrl68bDtZqjkI7Ke5mQLrH280zWfzF6UQ8';
 
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+  realtime: { params: { eventsPerSecond: 10 } }
+});
 let photos = [], lbIdx = 0;
 
-// ── LOAD dari Supabase ──
+// ── LOAD ──
 async function load() {
-  showToast('Memuat foto...');
   const { data, error } = await sb
     .from('gallery_photos')
     .select('*')
     .order('created_at', { ascending: true });
-  if (error) { showToast('Gagal memuat foto'); return; }
-  photos = data;
+  if (error) { showToast('Gagal memuat foto'); console.error(error); return; }
+  photos = data || [];
   render();
 }
 
@@ -241,39 +242,77 @@ function render() {
     </div>`).join('');
 }
 
-// ── UPLOAD ke Supabase Storage ──
+// ── REALTIME ──
+sb.channel('gallery-realtime')
+  .on('postgres_changes', {
+    event: 'INSERT',
+    schema: 'public',
+    table: 'gallery_photos'
+  }, payload => {
+    // cegah duplikat kalau yang upload adalah diri sendiri
+    if (!photos.find(p => p.id === payload.new.id)) {
+      photos.push(payload.new);
+      render();
+      showToast('Foto baru masuk ✦');
+    }
+  })
+  .on('postgres_changes', {
+    event: 'DELETE',
+    schema: 'public',
+    table: 'gallery_photos'
+  }, payload => {
+    photos = photos.filter(p => p.id !== payload.old.id);
+    if (document.getElementById('lightbox').style.display !== 'none') {
+      if (!photos.length) closeLb();
+      else { lbIdx = Math.min(lbIdx, photos.length - 1); updateLb(); }
+    }
+    render();
+    showToast('Foto dihapus ✦');
+  })
+  .subscribe(status => {
+    if (status === 'SUBSCRIBED') console.log('Realtime aktif ✦');
+  });
+
+// ── UPLOAD ──
 async function handleFiles(files) {
   const arr = Array.from(files);
   const title = document.getElementById('inp-title').value.trim();
   const caption = document.getElementById('inp-caption').value.trim();
-
   showToast('Mengupload ' + arr.length + ' foto...');
 
   for (const file of arr) {
     const ext = file.name.split('.').pop();
     const fileName = `${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
 
-    // upload ke storage
     const { error: upErr } = await sb.storage
       .from('photos')
-      .upload(fileName, file);
-      // .upload(fileName, file, { contentType: file.type });
+      .upload(fileName, file, { contentType: file.type, upsert: false });
 
-    if (upErr) { showToast('Gagal upload: ' + file.name); continue; }
+    if (upErr) {
+      console.error('Upload error:', upErr);
+      showToast('Gagal upload: ' + file.name + ' — ' + upErr.message);
+      continue;
+    }
 
-    // ambil public URL
     const { data: urlData } = sb.storage.from('photos').getPublicUrl(fileName);
     const src = urlData.publicUrl;
 
-    // simpan ke tabel
     const { data: row, error: dbErr } = await sb
       .from('gallery_photos')
       .insert({ src, title, caption })
       .select()
       .single();
 
-    if (dbErr) { showToast('Gagal simpan: ' + file.name); continue; }
-    photos.push(row);
+    if (dbErr) {
+      console.error('DB error:', dbErr);
+      showToast('Gagal simpan: ' + file.name);
+      continue;
+    }
+
+    // tambah ke array lokal langsung (realtime juga akan trigger tapi kita cegah duplikat)
+    if (!photos.find(p => p.id === row.id)) {
+      photos.push(row);
+    }
   }
 
   render();
@@ -284,53 +323,32 @@ async function handleFiles(files) {
 
 // ── DELETE ──
 async function deletePhoto(id, i) {
-  // hapus dari storage
   const src = photos[i].src;
-  const fileName = src.split('/photos/')[1];
+  const parts = src.split('/object/public/photos/');
+  const fileName = parts[1] || src.split('/photos/')[1];
+
   await sb.storage.from('photos').remove([fileName]);
-
-  // hapus dari tabel
   await sb.from('gallery_photos').delete().eq('id', id);
-
-  photos.splice(i, 1);
-  const lb = document.getElementById('lightbox');
-  if (lb.style.display !== 'none') {
-    if (!photos.length) closeLb();
-    else { lbIdx = Math.min(lbIdx, photos.length - 1); updateLb(); }
-  }
-  render();
-  showToast('Foto dihapus ✦');
+  // render akan dipanggil oleh realtime listener
 }
 
 async function clearAll() {
   if (!photos.length) return;
   if (!confirm('Hapus semua foto?')) return;
-  const fileNames = photos.map(p => p.src.split('/photos/')[1]);
-  await sb.storage.from('photos').remove(fileNames);
-  await sb.from('gallery_photos').delete().neq('id', '00000000-0000-0000-0000-000000000000');
-  photos = []; render(); closeLb();
-  showToast('Semua foto dihapus');
+  for (const p of photos) {
+    const parts = p.src.split('/object/public/photos/');
+    const fileName = parts[1] || p.src.split('/photos/')[1];
+    await sb.storage.from('photos').remove([fileName]);
+    await sb.from('gallery_photos').delete().eq('id', p.id);
+  }
+  // render dipanggil realtime
 }
-
-// ── REALTIME (foto muncul otomatis kalau orang lain upload) ──
-sb.channel('gallery')
-  .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'gallery_photos' }, payload => {
-    if (!photos.find(p => p.id === payload.new.id)) {
-      photos.push(payload.new);
-      render();
-      showToast('Foto baru ditambahkan ✦');
-    }
-  })
-  .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'gallery_photos' }, payload => {
-    photos = photos.filter(p => p.id !== payload.old.id);
-    render();
-  })
-  .subscribe();
 
 // ── LIGHTBOX ──
 function openLb(i) { lbIdx = i; document.getElementById('lightbox').style.display = 'flex'; updateLb(); }
 function updateLb() {
   const p = photos[lbIdx];
+  if (!p) return;
   document.getElementById('lb-img').src = p.src;
   document.getElementById('lb-cap').textContent = [p.title, p.caption].filter(Boolean).join(' — ');
   document.getElementById('lb-counter').textContent = (lbIdx+1) + ' / ' + photos.length;
