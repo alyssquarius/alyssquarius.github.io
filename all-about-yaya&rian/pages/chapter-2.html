@@ -243,19 +243,18 @@ function render() {
 }
 
 // ── REALTIME ──
-.on('postgres_changes', {
+sb.channel('gallery-realtime')
+  .on('postgres_changes', {
     event: 'INSERT',
     schema: 'public',
     table: 'gallery_photos'
   }, payload => {
-    // tunggu 1 detik dulu sebelum proses — hindari race condition
-    setTimeout(() => {
-      if (!photos.find(p => p.id === payload.new.id)) {
-        photos.push(payload.new);
-        render();
-        showToast('Foto baru ditambahkan ✦');
-      }
-    }, 1000);
+    // cegah duplikat kalau yang upload adalah diri sendiri
+    if (!photos.find(p => p.id === payload.new.id)) {
+      photos.push(payload.new);
+      render();
+      showToast('Foto baru masuk ✦');
+    }
   })
   .on('postgres_changes', {
     event: 'DELETE',
@@ -298,7 +297,7 @@ async function handleFiles(files) {
     const { data: urlData } = sb.storage.from('photos').getPublicUrl(fileName);
     const src = urlData.publicUrl;
 
-const { error: dbErr } = await sb
+    const { error: dbErr } = await sb
       .from('gallery_photos')
       .insert({ src, title, caption });
 
@@ -307,12 +306,13 @@ const { error: dbErr } = await sb
       showToast('Gagal simpan: ' + file.name);
       continue;
     }
+
+    // ← TIDAK ada photos.push di sini
+    // realtime listener yang akan otomatis tambahkan ke array dan render
   }
 
   document.getElementById('inp-title').value = '';
   document.getElementById('inp-caption').value = '';
-  // load ulang dari DB — paling aman untuk HP
-  await load();
   showToast(arr.length + ' foto berhasil diupload ✦');
 }
 
