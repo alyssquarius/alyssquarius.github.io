@@ -258,11 +258,6 @@ async function handleFiles(files) {
       .from('photos')
       .upload(fileName, file);
       // .upload(fileName, file, { contentType: file.type });
-    const { error: upErr } = await sb.storage
-  .from('photos')
-  .upload(fileName, file);
-
-console.log(upErr);
 
     if (upErr) { showToast('Gagal upload: ' + file.name); continue; }
 
