@@ -201,97 +201,160 @@ function stopMusic(){if(gn){gn.gain.linearRampToValueAtTime(0,ac.currentTime+1.5
 mb.addEventListener('click',()=>{pl=!pl;if(pl){startMusic();eq.classList.remove('paused');showToast('♪ Musik menyala');}else{stopMusic();eq.classList.add('paused');showToast('♪ Musik dimatikan');}});
 </script>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-let photos=[], lbIdx=0;
+const SUPABASE_URL = 'https://urznpphqbdmwgnbhrzdi.supabase.co/rest/v1/';   // ← ganti
+const SUPABASE_KEY = 'sb_secret_lTTLwW08rVzN6gOB-h9IwA_pM1-ozh0';    // ← ganti anon key
 
-function load(){
-  try{photos=JSON.parse(localStorage.getItem('gallery_photos')||'[]');}catch(e){photos=[];}
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+let photos = [], lbIdx = 0;
+
+// ── LOAD dari Supabase ──
+async function load() {
+  showToast('Memuat foto...');
+  const { data, error } = await sb
+    .from('gallery_photos')
+    .select('*')
+    .order('created_at', { ascending: true });
+  if (error) { showToast('Gagal memuat foto'); return; }
+  photos = data;
   render();
 }
 
-function save(){
-  try{localStorage.setItem('gallery_photos',JSON.stringify(photos));}
-  catch(e){showToast('Penyimpanan penuh — coba hapus beberapa foto dulu');}
-}
-
-function render(){
-  const list=document.getElementById('photos-list');
-  const empty=document.getElementById('empty-state');
-  if(!photos.length){list.innerHTML='';empty.style.display='block';return;}
-  empty.style.display='none';
-  list.innerHTML=photos.map((p,i)=>`
+// ── RENDER ──
+function render() {
+  const list = document.getElementById('photos-list');
+  const empty = document.getElementById('empty-state');
+  if (!photos.length) { list.innerHTML = ''; empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+  list.innerHTML = photos.map((p, i) => `
     <div class="photo-item">
       <div class="photo-frame" onclick="openLb(${i})">
-        <img src="${p.src}" alt="${p.title||''}"/>
-        <button class="photo-delete" onclick="event.stopPropagation();deletePhoto(${i})">✕ Hapus</button>
+        <img src="${p.src}" alt="${p.title || ''}"/>
+        <button class="photo-delete" onclick="event.stopPropagation();deletePhoto('${p.id}',${i})">✕ Hapus</button>
       </div>
       <div class="photo-meta">
         <div class="photo-num">No. ${String(i+1).padStart(2,'0')}</div>
-        ${p.title?`<div class="photo-title">${p.title}</div>`:''}
-        ${p.caption?`<div class="photo-caption">${p.caption}</div>`:''}
+        ${p.title ? `<div class="photo-title">${p.title}</div>` : ''}
+        ${p.caption ? `<div class="photo-caption">${p.caption}</div>` : ''}
       </div>
     </div>`).join('');
 }
 
-function deletePhoto(i){
-  photos.splice(i,1);save();
-  const lb=document.getElementById('lightbox');
-  if(lb.style.display!=='none'){
-    if(!photos.length)closeLb();
-    else{lbIdx=Math.min(lbIdx,photos.length-1);updateLb();}
+// ── UPLOAD ke Supabase Storage ──
+async function handleFiles(files) {
+  const arr = Array.from(files);
+  const title = document.getElementById('inp-title').value.trim();
+  const caption = document.getElementById('inp-caption').value.trim();
+
+  showToast('Mengupload ' + arr.length + ' foto...');
+
+  for (const file of arr) {
+    const ext = file.name.split('.').pop();
+    const fileName = `${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
+
+    // upload ke storage
+    const { error: upErr } = await sb.storage
+      .from('photos')
+      .upload(fileName, file, { contentType: file.type });
+
+    if (upErr) { showToast('Gagal upload: ' + file.name); continue; }
+
+    // ambil public URL
+    const { data: urlData } = sb.storage.from('photos').getPublicUrl(fileName);
+    const src = urlData.publicUrl;
+
+    // simpan ke tabel
+    const { data: row, error: dbErr } = await sb
+      .from('gallery_photos')
+      .insert({ src, title, caption })
+      .select()
+      .single();
+
+    if (dbErr) { showToast('Gagal simpan: ' + file.name); continue; }
+    photos.push(row);
   }
-  render();showToast('Foto dihapus ✦');
+
+  render();
+  document.getElementById('inp-title').value = '';
+  document.getElementById('inp-caption').value = '';
+  showToast(arr.length + ' foto berhasil diupload ✦');
 }
 
-function clearAll(){
-  if(!photos.length)return;
-  if(!confirm('Hapus semua foto?'))return;
-  photos=[];save();render();closeLb();showToast('Semua foto dihapus');
+// ── DELETE ──
+async function deletePhoto(id, i) {
+  // hapus dari storage
+  const src = photos[i].src;
+  const fileName = src.split('/photos/')[1];
+  await sb.storage.from('photos').remove([fileName]);
+
+  // hapus dari tabel
+  await sb.from('gallery_photos').delete().eq('id', id);
+
+  photos.splice(i, 1);
+  const lb = document.getElementById('lightbox');
+  if (lb.style.display !== 'none') {
+    if (!photos.length) closeLb();
+    else { lbIdx = Math.min(lbIdx, photos.length - 1); updateLb(); }
+  }
+  render();
+  showToast('Foto dihapus ✦');
 }
 
-function openLb(i){lbIdx=i;document.getElementById('lightbox').style.display='flex';updateLb();}
-function updateLb(){
-  const p=photos[lbIdx];
-  document.getElementById('lb-img').src=p.src;
-  document.getElementById('lb-cap').textContent=[p.title,p.caption].filter(Boolean).join(' — ');
-  document.getElementById('lb-counter').textContent=(lbIdx+1)+' / '+photos.length;
+async function clearAll() {
+  if (!photos.length) return;
+  if (!confirm('Hapus semua foto?')) return;
+  const fileNames = photos.map(p => p.src.split('/photos/')[1]);
+  await sb.storage.from('photos').remove(fileNames);
+  await sb.from('gallery_photos').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+  photos = []; render(); closeLb();
+  showToast('Semua foto dihapus');
 }
-function lbNav(d){lbIdx=(lbIdx+d+photos.length)%photos.length;updateLb();}
-function closeLb(){document.getElementById('lightbox').style.display='none';}
-document.getElementById('lightbox').addEventListener('click',function(e){if(e.target===this)closeLb();});
-document.addEventListener('keydown',e=>{
-  if(document.getElementById('lightbox').style.display!=='none'){
-    if(e.key==='ArrowLeft')lbNav(-1);
-    if(e.key==='ArrowRight')lbNav(1);
-    if(e.key==='Escape')closeLb();
+
+// ── REALTIME (foto muncul otomatis kalau orang lain upload) ──
+sb.channel('gallery')
+  .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'gallery_photos' }, payload => {
+    if (!photos.find(p => p.id === payload.new.id)) {
+      photos.push(payload.new);
+      render();
+      showToast('Foto baru ditambahkan ✦');
+    }
+  })
+  .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'gallery_photos' }, payload => {
+    photos = photos.filter(p => p.id !== payload.old.id);
+    render();
+  })
+  .subscribe();
+
+// ── LIGHTBOX ──
+function openLb(i) { lbIdx = i; document.getElementById('lightbox').style.display = 'flex'; updateLb(); }
+function updateLb() {
+  const p = photos[lbIdx];
+  document.getElementById('lb-img').src = p.src;
+  document.getElementById('lb-cap').textContent = [p.title, p.caption].filter(Boolean).join(' — ');
+  document.getElementById('lb-counter').textContent = (lbIdx+1) + ' / ' + photos.length;
+}
+function lbNav(d) { lbIdx = (lbIdx + d + photos.length) % photos.length; updateLb(); }
+function closeLb() { document.getElementById('lightbox').style.display = 'none'; }
+document.getElementById('lightbox').addEventListener('click', function(e) { if (e.target === this) closeLb(); });
+document.addEventListener('keydown', e => {
+  if (document.getElementById('lightbox').style.display !== 'none') {
+    if (e.key === 'ArrowLeft') lbNav(-1);
+    if (e.key === 'ArrowRight') lbNav(1);
+    if (e.key === 'Escape') closeLb();
   }
 });
 
-function handleFiles(files){
-  const arr=Array.from(files);
-  const title=document.getElementById('inp-title').value.trim();
-  const caption=document.getElementById('inp-caption').value.trim();
-  let done=0;
-  arr.forEach(file=>{
-    const r=new FileReader();
-    r.onload=e=>{
-      photos.push({src:e.target.result,title,caption});
-      if(++done===arr.length){
-        save();render();
-        document.getElementById('inp-title').value='';
-        document.getElementById('inp-caption').value='';
-        showToast(arr.length+' foto ditambahkan ✦');
-      }
-    };
-    r.readAsDataURL(file);
-  });
-}
-
-const uz=document.getElementById('upload-zone');
-uz.addEventListener('click',()=>document.getElementById('file-input').click());
-uz.addEventListener('dragover',e=>{e.preventDefault();uz.style.borderColor='var(--gold)';uz.style.background='rgba(201,169,110,0.03)';});
-uz.addEventListener('dragleave',()=>{uz.style.borderColor='rgba(201,169,110,0.18)';uz.style.background='transparent';});
-uz.addEventListener('drop',e=>{e.preventDefault();uz.style.borderColor='rgba(201,169,110,0.18)';uz.style.background='transparent';handleFiles(e.dataTransfer.files);});
+// ── UPLOAD ZONE ──
+const uz = document.getElementById('upload-zone');
+uz.addEventListener('click', () => document.getElementById('file-input').click());
+uz.addEventListener('dragover', e => { e.preventDefault(); uz.style.borderColor = 'var(--gold)'; });
+uz.addEventListener('dragleave', () => { uz.style.borderColor = 'rgba(201,169,110,0.18)'; });
+uz.addEventListener('drop', e => {
+  e.preventDefault();
+  uz.style.borderColor = 'rgba(201,169,110,0.18)';
+  handleFiles(e.dataTransfer.files);
+});
 
 load();
 </script>
