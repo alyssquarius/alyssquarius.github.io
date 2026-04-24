@@ -203,7 +203,7 @@ mb.addEventListener('click',()=>{pl=!pl;if(pl){startMusic();eq.classList.remove(
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const SUPABASE_URL = 'https://urznpphqbdmwgnbhrzdi.supabase.co';  // ← ganti
+const SUPABASE_URL = 'https://urznpphqbdmwgnbhrzdi.supabase.co/storage/v1/object/public/photos/';  // ← ganti
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVyem5wcGhxYmRtd2duYmhyemRpIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3Njk2NzM1NiwiZXhwIjoyMDkyNTQzMzU2fQ._FWSq-4RYp2PI-e-Q4vi3a35m00wWLUwY8b-862N6Fs';    // ← ganti anon key
 
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
