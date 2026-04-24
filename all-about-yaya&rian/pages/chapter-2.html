@@ -297,11 +297,9 @@ async function handleFiles(files) {
     const { data: urlData } = sb.storage.from('photos').getPublicUrl(fileName);
     const src = urlData.publicUrl;
 
-    const { data: row, error: dbErr } = await sb
+    const { error: dbErr } = await sb
       .from('gallery_photos')
-      .insert({ src, title, caption })
-      .select()
-      .single();
+      .insert({ src, title, caption });
 
     if (dbErr) {
       console.error('DB error:', dbErr);
@@ -309,13 +307,10 @@ async function handleFiles(files) {
       continue;
     }
 
-    // tambah ke array lokal langsung (realtime juga akan trigger tapi kita cegah duplikat)
-    if (!photos.find(p => p.id === row.id)) {
-      photos.push(row);
-    }
+    // ← TIDAK ada photos.push di sini
+    // realtime listener yang akan otomatis tambahkan ke array dan render
   }
 
-  render();
   document.getElementById('inp-title').value = '';
   document.getElementById('inp-caption').value = '';
   showToast(arr.length + ' foto berhasil diupload ✦');
