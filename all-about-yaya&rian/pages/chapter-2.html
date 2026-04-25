@@ -6,6 +6,165 @@
 <title>Chapter 02 — Gallery</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@200;300;400&display=swap" rel="stylesheet"/>
 <style>
+  /* ── POLAROID / PHOTOBOX ── */
+.photo-item {
+  margin-bottom: 0;
+  opacity: 0;
+  animation: fadeUp .7s ease forwards;
+  display: flex;
+  justify-content: center;
+}
+
+/* Override exhibit grid jadi photobox grid */
+#photos-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 2rem;
+  justify-items: center;
+}
+
+.polaroid {
+  background: #F5EDD9;
+  padding: 12px 12px 48px 12px;
+  box-shadow:
+    0 4px 6px rgba(0,0,0,.4),
+    0 1px 3px rgba(0,0,0,.3),
+    inset 0 0 0 1px rgba(0,0,0,.05);
+  cursor: none;
+  transition: transform .3s cubic-bezier(.34,1.56,.64,1), box-shadow .3s;
+  position: relative;
+  width: 100%;
+  max-width: 260px;
+}
+
+/* Rotasi acak tiap kartu */
+.photo-item:nth-child(odd) .polaroid  { transform: rotate(-1.5deg); }
+.photo-item:nth-child(even) .polaroid { transform: rotate(1.8deg); }
+.photo-item:nth-child(3n) .polaroid   { transform: rotate(-0.8deg); }
+.photo-item:nth-child(4n) .polaroid   { transform: rotate(2.5deg); }
+
+.polaroid:hover {
+  transform: rotate(0deg) scale(1.04) translateY(-6px) !important;
+  box-shadow:
+    0 16px 32px rgba(0,0,0,.5),
+    0 4px 8px rgba(0,0,0,.3);
+  z-index: 10;
+}
+
+.polaroid-frame {
+  position: relative;
+  overflow: hidden;
+  background: #000;
+  aspect-ratio: 1 / 1;
+  border: 1px solid rgba(0,0,0,.1);
+}
+
+.polaroid-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform .4s ease;
+  filter: sepia(10%) contrast(105%) brightness(98%);
+}
+
+.polaroid:hover .polaroid-frame img {
+  transform: scale(1.05);
+}
+
+.photo-delete {
+  position: absolute;
+  top: .4rem;
+  right: .4rem;
+  background: rgba(14,11,18,.8);
+  border: 1px solid rgba(181,99,106,0.6);
+  color: var(--rose);
+  font-size: .65rem;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: none;
+  opacity: 0;
+  transition: opacity .2s;
+  border-radius: 50%;
+  padding: 0;
+}
+
+.polaroid:hover .photo-delete { opacity: 1; }
+.photo-delete:hover { background: rgba(181,99,106,.9); }
+
+.polaroid-caption {
+  padding: 10px 4px 2px;
+  text-align: center;
+}
+
+.polaroid .photo-num {
+  font-size: .55rem;
+  letter-spacing: .2em;
+  color: rgba(14,11,18,.35);
+  text-transform: uppercase;
+  margin-bottom: .25rem;
+  font-family: 'Jost', sans-serif;
+}
+
+.polaroid .photo-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1rem;
+  font-weight: 400;
+  color: #2A1F0E;
+  line-height: 1.3;
+  margin-bottom: .2rem;
+}
+
+.polaroid .photo-caption-text {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: .8rem;
+  color: rgba(14,11,18,.5);
+  line-height: 1.4;
+}
+
+/* Pin effect di atas polaroid */
+.polaroid::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 12px;
+  height: 12px;
+  background: radial-gradient(circle at 35% 35%, #E8D5A3, #C9A96E);
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0,0,0,.4);
+  z-index: 2;
+}
+
+/* Tape effect alternatif — pilih salah satu */
+/*
+.polaroid::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50px;
+  height: 20px;
+  background: rgba(232,213,163,.5);
+  border: 1px solid rgba(201,169,110,.3);
+  z-index: 2;
+}
+*/
+
+@media(max-width:600px) {
+  #photos-list {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+  }
+  .polaroid { max-width: 100%; }
+}
+  
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 :root{--gold:#C9A96E;--gold-light:#E8D5A3;--rose:#B5636A;--deep:#0E0B12;--mid:#1A1425;--surface:#231B30;--cream:#F5EDD9;--text:#EDE4D3;--muted:#9B8FA0;}
 html{scroll-behavior:smooth;}
@@ -230,14 +389,16 @@ function render() {
   empty.style.display = 'none';
   list.innerHTML = photos.map((p, i) => `
     <div class="photo-item">
-      <div class="photo-frame" onclick="openLb(${i})">
-        <img src="${p.src}" alt="${p.title || ''}"/>
-        <button class="photo-delete" onclick="event.stopPropagation();deletePhoto('${p.id}',${i})">✕ Hapus</button>
-      </div>
-      <div class="photo-meta">
-        <div class="photo-num">No. ${String(i+1).padStart(2,'0')}</div>
-        ${p.title ? `<div class="photo-title">${p.title}</div>` : ''}
-        ${p.caption ? `<div class="photo-caption">${p.caption}</div>` : ''}
+      <div class="polaroid" onclick="openLb(${i})">
+        <div class="polaroid-frame">
+          <img src="${p.src}" alt="${p.title || ''}"/>
+          <button class="photo-delete" onclick="event.stopPropagation();deletePhoto('${p.id}',${i})">✕</button>
+        </div>
+        <div class="polaroid-caption">
+          <div class="photo-num">No. ${String(i+1).padStart(2,'0')}</div>
+          ${p.title ? `<div class="photo-title">${p.title}</div>` : ''}
+          ${p.caption ? `<div class="photo-caption-text">${p.caption}</div>` : '&nbsp;'}
+        </div>
       </div>
     </div>`).join('');
 }
