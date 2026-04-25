@@ -96,8 +96,8 @@ footer strong{color:var(--gold);font-weight:400;}
 
 <main class="ch-page">
   <a href="../index.html" class="ch-back">Kembali</a>
-  <div class="ch-page-label">Chapter 05 — Cinematic</div>
-  <h2 class="ch-page-title">Video Theater</h2>
+  <div class="ch-page-label">Chapter 05 — Video</div>
+  <h2 class="ch-page-title">Video Kebersamaan</h2>
   <div style="background:#000510;border:1px solid rgba(201,169,110,0.08);overflow:hidden;">
     <div style="padding:.75rem 1.25rem;border-bottom:1px solid rgba(201,169,110,0.06);display:flex;align-items:center;gap:.75rem;">
       <div style="display:flex;gap:.4rem;"><div style="width:10px;height:10px;border-radius:50%;background:#FF5F57;"></div><div style="width:10px;height:10px;border-radius:50%;background:#FFBD2E;"></div><div style="width:10px;height:10px;border-radius:50%;background:#28CA41;"></div></div>
@@ -152,35 +152,98 @@ function stopMusic(){if(gn){gn.gain.linearRampToValueAtTime(0,ac.currentTime+1.5
 mb.addEventListener('click',()=>{pl=!pl;if(pl){startMusic();eq.classList.remove('paused');showToast('♪ Musik menyala');}else{stopMusic();eq.classList.add('paused');showToast('♪ Musik dimatikan');}});
 document.querySelectorAll('.reveal').forEach(el=>new IntersectionObserver(([e])=>{if(e.isIntersecting)el.classList.add('revealed');},{threshold:.1}).observe(el));
 </script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-function ytId(url){const m=url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&?]+)/);return m?m[1]:null;}
-function loadVideo(url){
-  const u=url||document.getElementById('theater-url').value.trim();
-  const id=ytId(u);if(!id){showToast('Link YouTube tidak valid');return;}
-  document.getElementById('theater-screen').innerHTML=`<iframe src="https://www.youtube.com/embed/${id}?autoplay=1" allow="autoplay;encrypted-media" allowfullscreen style="width:100%;height:100%;border:none;position:absolute;inset:0;"></iframe>`;
+const SUPABASE_URL = 'https://urznpphqbdmwgnbhrzdi.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVyem5wcGhxYmRtd2duYmhyemRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY5NjczNTYsImV4cCI6MjA5MjU0MzM1Nn0.0kymrIh-8qrl68bDtZqjkI7Ke5mQLrH280zWfzF6UQ8';
+
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+let videos = [];
+
+// ── LOAD ──
+async function loadPlaylist() {
+  const { data, error } = await sb
+    .from('theater_playlist')
+    .select('*')
+    .order('created_at', { ascending: true });
+  if (error) { console.error(error); return; }
+  videos = data || [];
+  renderPlaylist();
+}
+
+// ── REALTIME ──
+sb.channel('theater-realtime')
+  .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'theater_playlist' }, payload => {
+    setTimeout(() => {
+      if (!videos.find(v => v.id === payload.new.id)) {
+        videos.push(payload.new);
+        renderPlaylist();
+        showToast('Video baru ditambahkan ✦');
+      }
+    }, 1000);
+  })
+  .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'theater_playlist' }, payload => {
+    videos = videos.filter(v => v.id !== payload.old.id);
+    renderPlaylist();
+  })
+  .subscribe();
+
+// ── RENDER ──
+function renderPlaylist() {
+  const el = document.getElementById('playlist');
+  if (!videos.length) {
+    el.innerHTML = '<p style="font-size:.75rem;color:var(--muted);font-style:italic;font-family:\'Cormorant Garamond\',serif;">Belum ada video. Tambahkan di bawah!</p>';
+    return;
+  }
+  el.innerHTML = videos.map((v, i) => `
+    <div style="display:flex;align-items:center;gap:.75rem;padding:.5rem .75rem;background:var(--mid);border:1px solid rgba(201,169,110,0.08);">
+      <span style="flex:1;font-size:.8rem;color:var(--cream);">${v.name}</span>
+      <button onclick="loadVideo('${v.url}')" style="background:rgba(201,169,110,0.08);border:1px solid rgba(201,169,110,0.2);color:var(--gold);font-size:.6rem;padding:.3rem .75rem;cursor:none;font-family:'Jost',sans-serif;letter-spacing:.1em;" onmouseover="this.style.background='rgba(201,169,110,0.15)'" onmouseout="this.style.background='rgba(201,169,110,0.08)'">Putar</button>
+      <button onclick="removePlaylist('${v.id}')" style="background:none;border:none;color:var(--muted);font-size:.8rem;cursor:none;" onmouseover="this.style.color='var(--rose)'" onmouseout="this.style.color='var(--muted)'">×</button>
+    </div>`).join('');
+}
+
+// ── ADD ──
+async function addPlaylist() {
+  const url = document.getElementById('pl-url').value.trim();
+  const name = document.getElementById('pl-name').value.trim() || 'Video';
+  if (!ytId(url)) { showToast('Link tidak valid'); return; }
+
+  const { error } = await sb
+    .from('theater_playlist')
+    .insert({ url, name });
+
+  if (error) { showToast('Gagal menyimpan: ' + error.message); return; }
+
+  document.getElementById('pl-url').value = '';
+  document.getElementById('pl-name').value = '';
+  await loadPlaylist();
+  showToast(name + ' ditambahkan ✦');
+}
+
+// ── REMOVE ──
+async function removePlaylist(id) {
+  await sb.from('theater_playlist').delete().eq('id', id);
+  // realtime akan handle render
+}
+
+// ── YOUTUBE HELPER ──
+function ytId(url) {
+  const m = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&?]+)/);
+  return m ? m[1] : null;
+}
+
+function loadVideo(url) {
+  const u = url || document.getElementById('theater-url').value.trim();
+  const id = ytId(u);
+  if (!id) { showToast('Link YouTube tidak valid'); return; }
+  document.getElementById('theater-screen').innerHTML = `<iframe src="https://www.youtube.com/embed/${id}?autoplay=1" allow="autoplay;encrypted-media" allowfullscreen style="width:100%;height:100%;border:none;position:absolute;inset:0;"></iframe>`;
   showToast('Selamat menonton ✦');
 }
-document.getElementById('theater-url').addEventListener('keydown',e=>{if(e.key==='Enter')loadVideo();});
-function renderPlaylist(){
-  const pl=JSON.parse(localStorage.getItem('theater_pl')||'[]');
-  const el=document.getElementById('playlist');
-  if(!pl.length){el.innerHTML='<p style="font-size:.75rem;color:var(--muted);font-style:italic;font-family:\'Cormorant Garamond\',serif;">Belum ada video. Tambahkan di bawah!</p>';return;}
-  el.innerHTML=pl.map((v,i)=>`<div style="display:flex;align-items:center;gap:.75rem;padding:.5rem .75rem;background:var(--mid);border:1px solid rgba(201,169,110,0.08);">
-    <span style="flex:1;font-size:.8rem;color:var(--cream);">${v.name}</span>
-    <button onclick="loadVideo('${v.url}')" style="background:rgba(201,169,110,0.08);border:1px solid rgba(201,169,110,0.2);color:var(--gold);font-size:.6rem;padding:.3rem .75rem;cursor:none;font-family:'Jost',sans-serif;letter-spacing:.1em;" onmouseover="this.style.background='rgba(201,169,110,0.15)'" onmouseout="this.style.background='rgba(201,169,110,0.08)'">Putar</button>
-    <button onclick="removePlaylist(${i})" style="background:none;border:none;color:var(--muted);font-size:.8rem;cursor:none;" onmouseover="this.style.color='var(--rose)'" onmouseout="this.style.color='var(--muted)'">×</button>
-  </div>`).join('');
-}
-function addPlaylist(){
-  const url=document.getElementById('pl-url').value.trim(),name=document.getElementById('pl-name').value.trim()||'Video';
-  if(!ytId(url)){showToast('Link tidak valid');return;}
-  const pl=JSON.parse(localStorage.getItem('theater_pl')||'[]');
-  pl.push({url,name});localStorage.setItem('theater_pl',JSON.stringify(pl));
-  document.getElementById('pl-url').value='';document.getElementById('pl-name').value='';
-  renderPlaylist();showToast(name+' ditambahkan ✦');
-}
-function removePlaylist(i){const pl=JSON.parse(localStorage.getItem('theater_pl')||'[]');pl.splice(i,1);localStorage.setItem('theater_pl',JSON.stringify(pl));renderPlaylist();}
-renderPlaylist();
+
+document.getElementById('theater-url').addEventListener('keydown', e => { if (e.key === 'Enter') loadVideo(); });
+
+loadPlaylist();
 </script>
 </body>
 </html>
