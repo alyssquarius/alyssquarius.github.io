@@ -404,8 +404,8 @@ document.head.appendChild(ytTag);
 window.onYouTubeIframeAPIReady=function(){
   ytPlayer=new YT.Player('yt-player',{
     height:'1',width:'1',
-    videoId:'zWxuc8L0W_Y',
-    playerVars:{autoplay:0,controls:0,loop:1,playlist:'zWxuc8L0W_Y',rel:0,modestbranding:1},
+    videoId:'eP3UsuxK30U',
+    playerVars:{autoplay:0,controls:0,loop:1,playlist:'eP3UsuxK30U',rel:0,modestbranding:1},
     events:{
       onReady:()=>{ytReady=true;ytPlayer.setVolume(60);},
       onStateChange:(e)=>{if(e.data===YT.PlayerState.ENDED){ytPlayer.seekTo(0);ytPlayer.playVideo();}}
@@ -420,7 +420,7 @@ document.getElementById('enterBtn').addEventListener('click',()=>{
   prompt.style.opacity='0';
   setTimeout(()=>prompt.style.display='none',700);
   function tryPlay(){
-    if(ytReady){ytPlayer.playVideo();eq.classList.remove('paused');pl=true;showToast('♪ IT\'S YOU — MAX feat. keshi');}
+    if(ytReady){ytPlayer.playVideo();eq.classList.remove('paused');pl=true;showToast('♪ dia - SENCY ft. TENXI');}
     else{setTimeout(tryPlay,200);}
   }
   tryPlay();
@@ -430,7 +430,7 @@ document.getElementById('enterBtn').addEventListener('click',()=>{
 mb.addEventListener('click',()=>{
   if(!ytReady){showToast('⏳ Player masih loading...');return;}
   pl=!pl;
-  if(pl){ytPlayer.playVideo();eq.classList.remove('paused');showToast('♪ IT\'S YOU — MAX feat. keshi');}
+  if(pl){ytPlayer.playVideo();eq.classList.remove('paused');showToast('♪ dia - SENCY ft. TENXI');}
   else{ytPlayer.pauseVideo();eq.classList.add('paused');showToast('♪ Musik dimatikan');}
 });
 </script>
