@@ -269,10 +269,40 @@ body{background:var(--deep);color:var(--text);font-family:'Jost',sans-serif;font
 .lb-counter{font-size:.68rem;color:var(--muted);letter-spacing:.15em;min-width:60px;text-align:center;}
 .lb-del{background:rgba(181,99,106,0.07);border:1px solid rgba(181,99,106,0.3);color:var(--rose);padding:.5rem 1.25rem;cursor:none;font-family:'Jost',sans-serif;font-size:.68rem;letter-spacing:.15em;transition:background .2s;}
 .lb-del:hover{background:rgba(181,99,106,0.15);}
+
+  /* === ENTER PROMPT === */
+.play-prompt{position:fixed;inset:0;z-index:500;display:flex;align-items:center;justify-content:center;background:rgba(14,11,18,0.97);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);}
+.play-prompt-inner{text-align:center;padding:3rem 2rem;animation:fadeUp .8s .2s ease both;}
+.play-prompt-tag{font-size:.65rem;letter-spacing:.4em;text-transform:uppercase;color:var(--gold);margin-bottom:1.5rem;}
+.play-prompt-title{font-family:'Cormorant Garamond',serif;font-size:clamp(2.5rem,8vw,5rem);font-weight:300;color:var(--cream);line-height:1.1;margin-bottom:.5rem;}
+.play-prompt-title em{font-style:italic;color:var(--gold-light);}
+.play-prompt-sub{font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:2.5rem;}
+.play-prompt-btn{display:inline-block;padding:1rem 3rem;background:transparent;border:1px solid var(--gold);color:var(--gold);font-family:'Jost',sans-serif;font-size:.75rem;letter-spacing:.3em;text-transform:uppercase;cursor:pointer;position:relative;overflow:hidden;transition:color .3s;}
+.play-prompt-btn::before{content:"";position:absolute;inset:0;background:var(--gold);transform:translateX(-101%);transition:transform .4s cubic-bezier(.77,0,.18,1);z-index:0;}
+.play-prompt-btn:hover::before{transform:translateX(0);}
+.play-prompt-btn:hover{color:var(--deep);}
+.play-prompt-btn span{position:relative;z-index:1;}
+.play-prompt-note{font-size:.62rem;color:var(--muted);margin-top:1.25rem;letter-spacing:.08em;}
+
+@media(max-width:600px){.countdown-grid{grid-template-columns:repeat(2,1fr);}.chapters-grid{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
 
+  <!-- ENTER PROMPT -->
+<div class="play-prompt" id="playPrompt">
+  <div class="play-prompt-inner">
+    <p class="play-prompt-tag">Chapter 02 — Gallery</p>
+    
+    <h1 class="ch-title">Galeri<br/><em style="font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--gold-light);">Kita</em></h1>
+    <p class="ch-intro">Di sini tempati kita simpan semua foto yang lucu dan gemas kebersamaan kita hihi.<br/>ayang juga bisa upload tau.</p>
+    <!-- <h1 class="play-prompt-title">"All About"<br/><em>Yaya &amp; Rian</em></h1> -->
+    <!-- <p class="play-prompt-sub">23 March 2025</p> -->
+    <button class="play-prompt-btn" id="enterBtn"><span>✦ Continue ✦</span></button>
+    <!-- <p class="play-prompt-note">♪ IT'S YOU — MAX feat. keshi akan menyala</p> -->
+  </div>
+</div>
+  
 <!-- Hidden YouTube Player -->
 <div style="position:fixed;bottom:-9999px;left:-9999px;width:1px;height:1px;overflow:hidden;pointer-events:none;z-index:-1;">
   <div id="yt-player"></div>
