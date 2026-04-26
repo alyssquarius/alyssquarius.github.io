@@ -7,38 +7,29 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 body{background:#0E0B12;overflow:hidden;}
-#site-frame{
-  position:fixed;
-  inset:0;
-  width:100%;
-  height:100%;
-  border:none;
-}
-#yt-wrap{
-  position:fixed;
-  bottom:-9999px;
-  left:-9999px;
-  width:1px;
-  height:1px;
-  pointer-events:none;
-  z-index:-1;
-}
+#site-frame{position:fixed;inset:0;width:100%;height:100%;border:none;}
+#yt-wrap{position:fixed;bottom:-9999px;left:-9999px;width:1px;height:1px;pointer-events:none;z-index:-1;}
 </style>
 </head>
 <body>
-
-<!-- Website berjalan di dalam iframe ini -->
-<iframe id="site-frame" src="index.html" allowfullscreen></iframe>
-
-<!-- YouTube player tersembunyi — musik tidak pernah berhenti -->
-<div id="yt-wrap">
-  <div id="yt-player"></div>
-</div>
-
+<iframe id="site-frame" src="main.html" allowfullscreen></iframe>
+<div id="yt-wrap"><div id="yt-player"></div></div>
 <script>
-const YT_VIDEO_ID = 'E07s5ZYygMg'; // Keshi — It's You
+// ── LAGU PER CHAPTER ──
+// Ganti video ID dan judul sesuai lagu yang kamu mau nanti
+const CHAPTER_SONGS = {
+  'main.html':      { id: 'E07s5ZYygMg', title: "Keshi — It's You" },
+  'chapter-1.html': { id: 'E07s5ZYygMg', title: "Keshi — It's You" },
+  'chapter-2.html': { id: 'E07s5ZYygMg', title: "Keshi — It's You" },
+  'chapter-3.html': { id: 'E07s5ZYygMg', title: "Keshi — It's You" },
+  'chapter-4.html': { id: 'E07s5ZYygMg', title: "Keshi — It's You" },
+  'chapter-5.html': { id: 'E07s5ZYygMg', title: "Keshi — It's You" },
+  'chapter-6.html': { id: 'E07s5ZYygMg', title: "Keshi — It's You" },
+};
+
 let player = null;
 let isPlaying = true;
+let currentSong = CHAPTER_SONGS['main.html'];
 
 // Load YouTube API
 const tag = document.createElement('script');
@@ -47,11 +38,11 @@ document.head.appendChild(tag);
 
 window.onYouTubeIframeAPIReady = function() {
   player = new YT.Player('yt-player', {
-    videoId: YT_VIDEO_ID,
+    videoId: currentSong.id,
     playerVars: {
       autoplay: 1,
       loop: 1,
-      playlist: YT_VIDEO_ID,
+      playlist: currentSong.id,
       controls: 0,
       disablekb: 1,
       fs: 0,
@@ -61,7 +52,6 @@ window.onYouTubeIframeAPIReady = function() {
       onReady: function(e) {
         e.target.setVolume(40);
         e.target.playVideo();
-        // Broadcast ke iframe bahwa musik sudah jalan
         broadcastStatus(true);
       },
       onStateChange: function(e) {
@@ -77,33 +67,54 @@ window.onYouTubeIframeAPIReady = function() {
   });
 };
 
-// Kirim status musik ke halaman dalam iframe
 function broadcastStatus(playing) {
   const frame = document.getElementById('site-frame');
   if (frame && frame.contentWindow) {
-    try {
-      frame.contentWindow.postMessage({ type: 'MUSIC_STATUS', playing }, '*');
-    } catch(e) {}
+    try { frame.contentWindow.postMessage({ type: 'MUSIC_STATUS', playing }, '*'); }
+    catch(e) {}
   }
 }
 
-// Terima perintah dari halaman dalam iframe (toggle, navigate)
+function changeSong(songKey) {
+  const song = CHAPTER_SONGS[songKey];
+  if (!song || !player) return;
+
+  // Kalau lagu sama, tidak perlu ganti — biarkan lanjut
+  if (song.id === currentSong.id) return;
+
+  currentSong = song;
+
+  // Ganti lagu tanpa berhenti
+  player.loadVideoById({
+    videoId: song.id,
+    suggestedQuality: 'small'
+  });
+  player.setLoop(true);
+
+  // Update playlist loop untuk lagu baru
+  setTimeout(() => {
+    try { player.setLoop(true); } catch(e) {}
+  }, 1000);
+}
+
 window.addEventListener('message', function(e) {
   if (!e.data || !e.data.type) return;
 
   if (e.data.type === 'MUSIC_TOGGLE') {
     if (!player) return;
-    const state = player.getPlayerState();
-    if (state === 1) {
-      player.pauseVideo();
-    } else {
-      player.playVideo();
-    }
+    if (player.getPlayerState() === 1) player.pauseVideo();
+    else player.playVideo();
   }
 
   if (e.data.type === 'NAVIGATE') {
     const frame = document.getElementById('site-frame');
-    if (frame) frame.src = e.data.url;
+    if (!frame) return;
+    frame.src = e.data.url;
+
+    // Deteksi chapter dari URL dan ganti lagu
+    const urlParts = e.data.url.split('/');
+    const pageName = urlParts[urlParts.length - 1].split('?')[0];
+    changeSong(pageName);
   }
 
   if (e.data.type === 'GET_STATUS') {
