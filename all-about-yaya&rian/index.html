@@ -4,132 +4,6 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>All About — Yaya & Rian</title>
-<style>
-*{margin:0;padding:0;box-sizing:border-box;}
-body{background:#0E0B12;overflow:hidden;}
-#site-frame{position:fixed;inset:0;width:100%;height:100%;border:none;}
-#yt-wrap{position:fixed;bottom:-9999px;left:-9999px;width:1px;height:1px;pointer-events:none;z-index:-1;}
-</style>
-</head>
-<body>
-<iframe id="site-frame" src="main.html" allowfullscreen></iframe>
-<div id="yt-wrap"><div id="yt-player"></div></div>
-<script>
-// ── LAGU PER CHAPTER ──
-// Ganti video ID dan judul sesuai lagu yang kamu mau nanti
-const CHAPTER_SONGS = {
-  'main.html':      { id: 'E07s5ZYygMg', title: "Keshi — It's You" },
-  'chapter-1.html': { id: 'E07s5ZYygMg', title: "Keshi — It's You" },
-  'chapter-2.html': { id: 'E07s5ZYygMg', title: "Keshi — It's You" },
-  'chapter-3.html': { id: 'E07s5ZYygMg', title: "Keshi — It's You" },
-  'chapter-4.html': { id: 'E07s5ZYygMg', title: "Keshi — It's You" },
-  'chapter-5.html': { id: 'E07s5ZYygMg', title: "Keshi — It's You" },
-  'chapter-6.html': { id: 'E07s5ZYygMg', title: "Keshi — It's You" },
-};
-
-let player = null;
-let isPlaying = true;
-let currentSong = CHAPTER_SONGS['main.html'];
-
-// Load YouTube API
-const tag = document.createElement('script');
-tag.src = 'https://www.youtube.com/iframe_api';
-document.head.appendChild(tag);
-
-window.onYouTubeIframeAPIReady = function() {
-  player = new YT.Player('yt-player', {
-    videoId: currentSong.id,
-    playerVars: {
-      autoplay: 1,
-      loop: 1,
-      playlist: currentSong.id,
-      controls: 0,
-      disablekb: 1,
-      fs: 0,
-      modestbranding: 1,
-    },
-    events: {
-      onReady: function(e) {
-        e.target.setVolume(40);
-        e.target.playVideo();
-        broadcastStatus(true);
-      },
-      onStateChange: function(e) {
-        if (e.data === YT.PlayerState.PLAYING) {
-          isPlaying = true;
-          broadcastStatus(true);
-        } else if (e.data === YT.PlayerState.PAUSED) {
-          isPlaying = false;
-          broadcastStatus(false);
-        }
-      }
-    }
-  });
-};
-
-function broadcastStatus(playing) {
-  const frame = document.getElementById('site-frame');
-  if (frame && frame.contentWindow) {
-    try { frame.contentWindow.postMessage({ type: 'MUSIC_STATUS', playing }, '*'); }
-    catch(e) {}
-  }
-}
-
-function changeSong(songKey) {
-  const song = CHAPTER_SONGS[songKey];
-  if (!song || !player) return;
-
-  // Kalau lagu sama, tidak perlu ganti — biarkan lanjut
-  if (song.id === currentSong.id) return;
-
-  currentSong = song;
-
-  // Ganti lagu tanpa berhenti
-  player.loadVideoById({
-    videoId: song.id,
-    suggestedQuality: 'small'
-  });
-  player.setLoop(true);
-
-  // Update playlist loop untuk lagu baru
-  setTimeout(() => {
-    try { player.setLoop(true); } catch(e) {}
-  }, 1000);
-}
-
-window.addEventListener('message', function(e) {
-  if (!e.data || !e.data.type) return;
-
-  if (e.data.type === 'MUSIC_TOGGLE') {
-    if (!player) return;
-    if (player.getPlayerState() === 1) player.pauseVideo();
-    else player.playVideo();
-  }
-
-  if (e.data.type === 'NAVIGATE') {
-    const frame = document.getElementById('site-frame');
-    if (!frame) return;
-    frame.src = e.data.url;
-
-    // Deteksi chapter dari URL dan ganti lagu
-    const urlParts = e.data.url.split('/');
-    const pageName = urlParts[urlParts.length - 1].split('?')[0];
-    changeSong(pageName);
-  }
-
-  if (e.data.type === 'GET_STATUS') {
-    broadcastStatus(isPlaying);
-  }
-});
-</script>
-</body>
-</html>
-<!-- <!doctype html>
-<html lang="id">
-<head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>All About — Yaya & Rian</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@200;300;400&display=swap" rel="stylesheet"/>
 <style>*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 :root{--gold:#C9A96E;--gold-light:#E8D5A3;--rose:#B5636A;--rose-dark:#7A3B40;--deep:#0E0B12;--mid:#1A1425;--surface:#231B30;--card:#2A2040;--cream:#F5EDD9;--text:#EDE4D3;--muted:#9B8FA0;}
@@ -268,7 +142,7 @@ footer strong{color:var(--gold);font-weight:400;}
   <div class="chapters-grid">
 
     <!-- Chapter 1 — LOCKED -->
-    <!-- <div class="chapter-card locked" data-locked="true">
+    <div class="chapter-card locked" data-locked="true">
       <div class="ch-mood">Feelings</div>
       <div class="ch-num">01</div>
       <h3 class="ch-title">Ungkapkan Perasaan</h3>
@@ -278,19 +152,19 @@ footer strong{color:var(--gold);font-weight:400;}
         <span class="lock-icon">🔒</span>
         <span class="lock-text">Belum celecai ayang hehe~</span>
       </div>
-    </div> -->
+    </div>
 
     <!-- Chapter 2 — UNLOCKED -->
-    <!-- <a href="pages/chapter-2.html" class="chapter-card">
+    <a href="pages/chapter-2.html" class="chapter-card">
       <div class="ch-mood">Gallery</div>
       <div class="ch-num">02</div>
       <h3 class="ch-title">Galeri Kita</h3>
       <p class="ch-desc">Upload dan simpan foto kenangan kita bersama yahahaha hayukk.</p>
       <span class="ch-open">✦ Open</span>
-    </a> -->
+    </a>
 
     <!-- Chapter 3 — LOCKED -->
-    <!-- <div class="chapter-card locked" data-locked="true">
+    <div class="chapter-card locked" data-locked="true">
       <div class="ch-mood">Soft Talk</div>
       <div class="ch-num">03</div>
       <h3 class="ch-title">Alasan</h3>
@@ -300,10 +174,10 @@ footer strong{color:var(--gold);font-weight:400;}
         <span class="lock-icon">🔒</span>
         <span class="lock-text">Belum celecai ayang hehe~</span>
       </div>
-    </div> -->
+    </div>
 
     <!-- Chapter 4 — LOCKED -->
-    <!-- <div class="chapter-card locked" data-locked="true">
+    <div class="chapter-card locked" data-locked="true">
       <div class="ch-mood">Coupon</div>
       <div class="ch-num">04</div>
       <h3 class="ch-title">Kupon Buat Ayang</h3>
@@ -313,26 +187,26 @@ footer strong{color:var(--gold);font-weight:400;}
         <span class="lock-icon">🔒</span>
         <span class="lock-text">Belum celecai ayang hehe~</span>
       </div>
-    </div> -->
+    </div>
 
     <!-- Chapter 5 — LOCKED -->    
-    <!-- <div class="chapter-card locked" data-locked="true"> -->
+    <div class="chapter-card locked" data-locked="true">
     <!-- <a href="pages/chapter-5.html" class="chapter-card"> -->
-      <!-- <div class="ch-mood">Video</div>
+      <div class="ch-mood">Video</div>
       <div class="ch-num">05</div>
       <h3 class="ch-title">Video Kebersamaan</h3>
       <p class="ch-desc">Ayang atau Rian bisa upload video kita disini, buat kenang-kenangan lucuk.</p> -->
       <!-- <span class="ch-open">✦ Open</span> -->
-      <!-- <span class="ch-open locked-badge">Terkunci</span>
+      <span class="ch-open locked-badge">Terkunci</span>
       <div class="lock-overlay">
         <span class="lock-icon">🔒</span>
         <span class="lock-text">Belum celecai ayang hehe~</span>
       </div>
-      </div> -->
+      </div>
     <!-- </a> -->
 
     <!-- Chapter 6 — LOCKED -->
-    <!-- <div class="chapter-card locked" data-locked="true">
+    <div class="chapter-card locked" data-locked="true">
       <div class="ch-mood">Letter</div>
       <div class="ch-num">06</div>
       <h3 class="ch-title">Surat Buat Ayang Hihihihi</h3>
@@ -343,7 +217,6 @@ footer strong{color:var(--gold);font-weight:400;}
         <span class="lock-text">Belum celecai ayang hehe~</span>
       </div>
     </div>
-
   </div>
 </section>
 
@@ -376,7 +249,7 @@ function stopMusic(){if(gn){gn.gain.linearRampToValueAtTime(0,ac.currentTime+1.5
 mb.addEventListener('click',()=>{pl=!pl;if(pl){startMusic();eq.classList.remove('paused');showToast('♪ Musik menyala');}else{stopMusic();eq.classList.add('paused');showToast('♪ Musik dimatikan');}});
 document.querySelectorAll('.reveal').forEach(el=>new IntersectionObserver(([e])=>{if(e.isIntersecting)el.classList.add('revealed');},{threshold:.1}).observe(el)); -->
 
-<!-- // === LOCKED CARD CLICK HANDLER ===
+// === LOCKED CARD CLICK HANDLER ===
 document.querySelectorAll('.chapter-card.locked').forEach(card=>{
   card.addEventListener('click',e=>{
     e.preventDefault();
@@ -386,8 +259,8 @@ document.querySelectorAll('.chapter-card.locked').forEach(card=>{
     card.classList.add('shake');
     setTimeout(()=>card.classList.remove('shake'),400);
   });
-}); -->
-<!-- </script>
+});
+</script>
 <script>
 const START=new Date('2025-03-23T00:00:00+08:00'),YEAR=365*24*3600*1000;
 let pv=-1;
@@ -423,4 +296,4 @@ btn.addEventListener('click',()=>{
 });
 </script>
 </body>
-</html> -->
+</html>
