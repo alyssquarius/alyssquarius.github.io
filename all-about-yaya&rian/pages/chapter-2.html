@@ -272,6 +272,12 @@ body{background:var(--deep);color:var(--text);font-family:'Jost',sans-serif;font
 </style>
 </head>
 <body>
+
+<!-- Hidden YouTube Player -->
+<div style="position:fixed;bottom:-9999px;left:-9999px;width:1px;height:1px;overflow:hidden;pointer-events:none;z-index:-1;">
+  <div id="yt-player"></div>
+</div>
+  
 <div class="cursor" id="cursor"></div>
 <div class="cursor-ring" id="cursorRing"></div>
 <canvas id="starCanvas"></canvas>
@@ -352,12 +358,51 @@ function cp(){const p=document.createElement('div');p.className='petal';const sz
 setInterval(cp,600);for(let i=0;i<8;i++)cp();
 const toastEl=document.getElementById('toast');let tt;
 function showToast(m){toastEl.textContent=m;toastEl.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>toastEl.classList.remove('show'),3000);}
+// const mb=document.getElementById('musicBtn'),eq=document.getElementById('eq');
+// let ac,gn,pl=false,osc=[];
+// function startMusic(){ac=new(AudioContext||webkitAudioContext)();gn=ac.createGain();gn.gain.setValueAtTime(0,ac.currentTime);gn.gain.linearRampToValueAtTime(.05,ac.currentTime+2);gn.connect(ac.destination);
+// [261.63,329.63,392,523.25,659.25].forEach((f,i)=>{const o=ac.createOscillator(),og=ac.createGain();o.type='sine';o.frequency.value=f;og.gain.setValueAtTime(0,ac.currentTime);og.gain.linearRampToValueAtTime(1,ac.currentTime+i*.8+1.5);const lf=ac.createOscillator(),lg=ac.createGain();lf.frequency.value=.2+i*.05;lg.gain.value=.5;lf.connect(lg);lg.connect(o.frequency);lf.start();o.connect(og);og.connect(gn);o.start();osc.push({o,lf});});}
+// function stopMusic(){if(gn){gn.gain.linearRampToValueAtTime(0,ac.currentTime+1.5);setTimeout(()=>{osc.forEach(x=>{try{x.o.stop();x.lf.stop();}catch(e){}});ac.close();},1600);}}
+// mb.addEventListener('click',()=>{pl=!pl;if(pl){startMusic();eq.classList.remove('paused');showToast('♪ Musik menyala');}else{stopMusic();eq.classList.add('paused');showToast('♪ Musik dimatikan');}});
+
+  // === YOUTUBE PLAYER ===
 const mb=document.getElementById('musicBtn'),eq=document.getElementById('eq');
-let ac,gn,pl=false,osc=[];
-function startMusic(){ac=new(AudioContext||webkitAudioContext)();gn=ac.createGain();gn.gain.setValueAtTime(0,ac.currentTime);gn.gain.linearRampToValueAtTime(.05,ac.currentTime+2);gn.connect(ac.destination);
-[261.63,329.63,392,523.25,659.25].forEach((f,i)=>{const o=ac.createOscillator(),og=ac.createGain();o.type='sine';o.frequency.value=f;og.gain.setValueAtTime(0,ac.currentTime);og.gain.linearRampToValueAtTime(1,ac.currentTime+i*.8+1.5);const lf=ac.createOscillator(),lg=ac.createGain();lf.frequency.value=.2+i*.05;lg.gain.value=.5;lf.connect(lg);lg.connect(o.frequency);lf.start();o.connect(og);og.connect(gn);o.start();osc.push({o,lf});});}
-function stopMusic(){if(gn){gn.gain.linearRampToValueAtTime(0,ac.currentTime+1.5);setTimeout(()=>{osc.forEach(x=>{try{x.o.stop();x.lf.stop();}catch(e){}});ac.close();},1600);}}
-mb.addEventListener('click',()=>{pl=!pl;if(pl){startMusic();eq.classList.remove('paused');showToast('♪ Musik menyala');}else{stopMusic();eq.classList.add('paused');showToast('♪ Musik dimatikan');}});
+let ytPlayer=null,ytReady=false,pl=false;
+const ytTag=document.createElement('script');
+ytTag.src='https://www.youtube.com/iframe_api';
+document.head.appendChild(ytTag);
+window.onYouTubeIframeAPIReady=function(){
+  ytPlayer=new YT.Player('yt-player',{
+    height:'1',width:'1',
+    videoId:'zWxuc8L0W_Y',
+    playerVars:{autoplay:0,controls:0,loop:1,playlist:'zWxuc8L0W_Y',rel:0,modestbranding:1},
+    events:{
+      onReady:()=>{ytReady=true;ytPlayer.setVolume(60);},
+      onStateChange:(e)=>{if(e.data===YT.PlayerState.ENDED){ytPlayer.seekTo(0);ytPlayer.playVideo();}}
+    }
+  });
+};
+
+// === ENTER PROMPT ===
+document.getElementById('enterBtn').addEventListener('click',()=>{
+  const prompt=document.getElementById('playPrompt');
+  prompt.style.transition='opacity .7s ease';
+  prompt.style.opacity='0';
+  setTimeout(()=>prompt.style.display='none',700);
+  function tryPlay(){
+    if(ytReady){ytPlayer.playVideo();eq.classList.remove('paused');pl=true;showToast('♪ IT\'S YOU — MAX feat. keshi');}
+    else{setTimeout(tryPlay,200);}
+  }
+  tryPlay();
+});
+
+// === MUSIK BTN ===
+mb.addEventListener('click',()=>{
+  if(!ytReady){showToast('⏳ Player masih loading...');return;}
+  pl=!pl;
+  if(pl){ytPlayer.playVideo();eq.classList.remove('paused');showToast('♪ IT\'S YOU — MAX feat. keshi');}
+  else{ytPlayer.pauseVideo();eq.classList.add('paused');showToast('♪ Musik dimatikan');}
+});
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
