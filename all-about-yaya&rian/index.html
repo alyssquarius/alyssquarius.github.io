@@ -247,7 +247,7 @@ function startMusic(){ac=new(AudioContext||webkitAudioContext)();gn=ac.createGai
 [261.63,329.63,392,523.25,659.25].forEach((f,i)=>{const o=ac.createOscillator(),og=ac.createGain();o.type='sine';o.frequency.value=f;og.gain.setValueAtTime(0,ac.currentTime);og.gain.linearRampToValueAtTime(1,ac.currentTime+i*.8+1.5);const lf=ac.createOscillator(),lg=ac.createGain();lf.frequency.value=.2+i*.05;lg.gain.value=.5;lf.connect(lg);lg.connect(o.frequency);lf.start();o.connect(og);og.connect(gn);o.start();osc.push({o,lf});});}
 function stopMusic(){if(gn){gn.gain.linearRampToValueAtTime(0,ac.currentTime+1.5);setTimeout(()=>{osc.forEach(x=>{try{x.o.stop();x.lf.stop();}catch(e){}});ac.close();},1600);}}
 mb.addEventListener('click',()=>{pl=!pl;if(pl){startMusic();eq.classList.remove('paused');showToast('♪ Musik menyala');}else{stopMusic();eq.classList.add('paused');showToast('♪ Musik dimatikan');}});
-document.querySelectorAll('.reveal').forEach(el=>new IntersectionObserver(([e])=>{if(e.isIntersecting)el.classList.add('revealed');},{threshold:.1}).observe(el)); -->
+document.querySelectorAll('.reveal').forEach(el=>new IntersectionObserver(([e])=>{if(e.isIntersecting)el.classList.add('revealed');},{threshold:.1}).observe(el));
 
 // === LOCKED CARD CLICK HANDLER ===
 document.querySelectorAll('.chapter-card.locked').forEach(card=>{
