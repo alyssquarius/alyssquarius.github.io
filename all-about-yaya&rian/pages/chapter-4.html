@@ -5,8 +5,9 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Chapter 04 — Coupon Deck</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@200;300;400&display=swap" rel="stylesheet"/>
-<style>*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
-:root{--gold:#C9A96E;--gold-light:#E8D5A3;--rose:#B5636A;--rose-dark:#7A3B40;--deep:#0E0B12;--mid:#1A1425;--surface:#231B30;--card:#2A2040;--cream:#F5EDD9;--text:#EDE4D3;--muted:#9B8FA0;}
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{--gold:#C9A96E;--gold-light:#E8D5A3;--rose:#B5636A;--rose-dark:#7A3B40;--deep:#0E0B12;--mid:#1A1425;--surface:#231B30;--cream:#F5EDD9;--text:#EDE4D3;--muted:#9B8FA0;}
 html{scroll-behavior:smooth;}
 body{background:var(--deep);color:var(--text);font-family:'Jost',sans-serif;font-weight:300;overflow-x:hidden;cursor:none;}
 .cursor{position:fixed;width:8px;height:8px;background:var(--gold);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);}
@@ -26,66 +27,93 @@ body{background:var(--deep);color:var(--text);font-family:'Jost',sans-serif;font
 .eq-bar:nth-child(1){animation-delay:0s;}.eq-bar:nth-child(2){animation-delay:.2s;}.eq-bar:nth-child(3){animation-delay:.4s;}
 @keyframes eqAnim{0%,100%{height:4px;}50%{height:14px;}}
 .eq.paused .eq-bar{animation-play-state:paused;height:8px;}
-.section{position:relative;z-index:1;padding:6rem 2rem;max-width:960px;margin:0 auto;}
-.section-label{font-size:.65rem;letter-spacing:.4em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem;text-align:center;}
-.section-title{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,5vw,3.2rem);font-weight:300;text-align:center;color:var(--cream);margin-bottom:3rem;}
-.hero{position:relative;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem;z-index:1;}
-.hero-tag{font-weight:200;font-size:.7rem;letter-spacing:.35em;text-transform:uppercase;color:var(--gold);margin-bottom:2rem;opacity:0;animation:fadeUp .8s .3s ease forwards;}
-.hero-title{font-family:'Cormorant Garamond',serif;font-size:clamp(3.5rem,10vw,7rem);font-weight:300;line-height:1;color:var(--cream);opacity:0;animation:fadeUp .9s .5s ease forwards;}
-.hero-title em{font-style:italic;color:var(--gold-light);}
-.hero-subtitle{font-size:.85rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-top:1.5rem;opacity:0;animation:fadeUp .8s .8s ease forwards;}
-.divider{width:60px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:2.5rem auto;opacity:0;animation:fadeUp .6s 1s ease forwards;}
-.scroll-hint{position:absolute;bottom:2.5rem;left:0;right:0;display:flex;flex-direction:column;align-items:center;gap:.5rem;color:var(--muted);font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;text-align:center;opacity:0;animation:fadeUp .6s 1.5s ease forwards;}
-.scroll-line{width:1px;height:40px;background:linear-gradient(to bottom,var(--gold),transparent);animation:scrollAnim 2s 2s ease-in-out infinite;}
-@keyframes scrollAnim{0%,100%{opacity:.3;transform:scaleY(1);}50%{opacity:1;transform:scaleY(.6);}}
 @keyframes fadeUp{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
-@keyframes bump{0%,100%{transform:scale(1);}50%{transform:scale(1.08);}}
-.reveal{opacity:0;transform:translateY(30px);transition:opacity .7s ease,transform .7s ease;}
-.revealed{opacity:1;transform:translateY(0);}
-.countdown-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:rgba(201,169,110,0.15);border:1px solid rgba(201,169,110,0.15);border-radius:2px;overflow:hidden;margin-bottom:1.5rem;}
-.cd-cell{background:var(--mid);padding:2.5rem 1rem;text-align:center;}
-.cd-num{font-family:'Cormorant Garamond',serif;font-size:clamp(2.5rem,8vw,5rem);font-weight:300;color:var(--gold-light);line-height:1;display:block;}
-.cd-num.bump{animation:bump .15s ease;}
-.cd-label{display:block;font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;color:var(--muted);margin-top:.75rem;}
-.cd-status{text-align:center;font-size:.8rem;color:var(--muted);letter-spacing:.05em;}
-.cd-bar-wrap{background:rgba(201,169,110,0.1);border-radius:99px;height:4px;overflow:hidden;margin:1.5rem 0 .5rem;}
-.cd-bar{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-light));border-radius:99px;transition:width 1s ease;width:0%;}
-.cd-progress-label{text-align:center;font-size:.7rem;color:var(--muted);letter-spacing:.1em;margin-bottom:1rem;}
-.unlock-btn{display:block;margin:2.5rem auto 0;padding:1rem 3rem;background:transparent;border:1px solid var(--gold);color:var(--gold);font-family:'Jost',sans-serif;font-size:.75rem;letter-spacing:.3em;text-transform:uppercase;cursor:none;position:relative;overflow:hidden;transition:color .3s;}
-.unlock-btn::before{content:"";position:absolute;inset:0;background:var(--gold);transform:translateX(-101%);transition:transform .4s cubic-bezier(.77,0,.18,1);z-index:0;}
-.unlock-btn:hover::before{transform:translateX(0);}
-.unlock-btn:hover{color:var(--deep);}
-.unlock-btn span{position:relative;z-index:1;}
-.message-box{background:var(--surface);border:1px solid rgba(201,169,110,0.15);padding:3rem;position:relative;}
-.message-box::before{content:'"';font-family:'Cormorant Garamond',serif;font-size:8rem;color:rgba(201,169,110,0.08);position:absolute;top:-.5rem;left:1.5rem;line-height:1;}
-.message-text{font-family:'Cormorant Garamond',serif;font-size:clamp(1.1rem,3vw,1.4rem);font-style:italic;color:var(--cream);line-height:1.8;text-align:center;position:relative;z-index:1;}
-.message-sig{text-align:center;margin-top:2rem;font-size:.7rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);}
-.chapters-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1px;background:rgba(201,169,110,0.08);border:1px solid rgba(201,169,110,0.08);}
-.chapter-card{background:var(--mid);padding:2rem;position:relative;overflow:hidden;transition:background .3s;cursor:none;text-decoration:none;display:block;color:inherit;}
-.chapter-card:hover{background:var(--surface);}
-.chapter-card::after{content:"";position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);transform:scaleX(0);transition:transform .4s;}
-.chapter-card:hover::after{transform:scaleX(1);}
-.ch-mood{font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:.5rem;display:flex;align-items:center;gap:.5rem;}
-.ch-mood::before{content:"";display:inline-block;width:20px;height:1px;background:var(--gold);}
-.ch-num{font-family:'Cormorant Garamond',serif;font-size:4rem;font-weight:300;color:rgba(201,169,110,0.08);line-height:1;position:absolute;top:1.2rem;right:1.5rem;user-select:none;transition:color .3s;}
-.chapter-card:hover .ch-num{color:rgba(201,169,110,0.18);}
-.ch-title{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:400;color:var(--cream);margin-bottom:.75rem;margin-top:.5rem;}
-.ch-desc{font-size:.78rem;color:var(--muted);line-height:1.7;letter-spacing:.02em;}
-.ch-open{display:inline-flex;align-items:center;gap:.4rem;margin-top:1.5rem;font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);}
-footer{position:relative;z-index:1;text-align:center;padding:3rem 2rem;color:var(--muted);font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid rgba(201,169,110,0.08);}
-footer strong{color:var(--gold);font-weight:400;}
+
+/* PAGE */
 .ch-page{position:relative;z-index:1;max-width:960px;margin:0 auto;padding:6rem 2rem 4rem;}
 .ch-back{display:inline-flex;align-items:center;gap:.5rem;font-size:.65rem;letter-spacing:.3em;text-transform:uppercase;color:var(--muted);text-decoration:none;margin-bottom:3rem;transition:color .2s;cursor:none;}
 .ch-back:hover{color:var(--gold);}
 .ch-back::before{content:'←';}
+.ch-page-label{font-size:.65rem;letter-spacing:.4em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem;}
+.ch-page-title{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,5vw,3rem);font-weight:300;color:var(--cream);margin-bottom:2.5rem;}
 .ch-next-page{display:block;margin:3rem auto 0;padding:1rem 3rem;background:transparent;border:1px solid var(--gold);color:var(--gold);font-family:'Jost',sans-serif;font-size:.75rem;letter-spacing:.3em;text-transform:uppercase;cursor:none;position:relative;overflow:hidden;transition:color .3s;text-decoration:none;text-align:center;width:fit-content;}
 .ch-next-page::before{content:"";position:absolute;inset:0;background:var(--gold);transform:translateX(-101%);transition:transform .4s cubic-bezier(.77,0,.18,1);z-index:0;}
 .ch-next-page:hover::before{transform:translateX(0);}
 .ch-next-page:hover{color:var(--deep);}
 .ch-next-page span{position:relative;z-index:1;}
-.ch-page-label{font-size:.65rem;letter-spacing:.4em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem;}
-.ch-page-title{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,5vw,3rem);font-weight:300;color:var(--cream);margin-bottom:2.5rem;}
-@media(max-width:600px){.countdown-grid{grid-template-columns:repeat(2,1fr);}.chapters-grid{grid-template-columns:1fr;}}</style>
+
+/* COUPON CARDS */
+.coupon-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem;}
+.coupon-card{background:var(--mid);border:1px solid rgba(201,169,110,0.15);overflow:hidden;position:relative;transition:border-color .3s,transform .2s;cursor:pointer;}
+.coupon-card:hover{border-color:rgba(201,169,110,0.4);transform:translateY(-2px);}
+.coupon-card.used{opacity:.6;cursor:not-allowed;}
+.coupon-card.used:hover{transform:none;border-color:rgba(201,169,110,0.15);}
+.coupon-body{padding:1.5rem 1.5rem 1rem;}
+.coupon-icon-row{display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem;}
+.coupon-icon{width:44px;height:44px;background:rgba(201,169,110,0.08);border:1px solid rgba(201,169,110,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;}
+.coupon-name{font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--cream);}
+.coupon-desc{font-size:.72rem;color:var(--muted);line-height:1.5;margin-top:.2rem;}
+.coupon-status{font-size:.65rem;color:var(--muted);letter-spacing:.1em;margin-top:.5rem;}
+.coupon-divider{border-top:1px dashed rgba(201,169,110,0.15);margin:0 1.5rem;}
+.coupon-action{padding:.75rem 1.5rem;}
+.coupon-btn{width:100%;background:transparent;border:1px solid rgba(201,169,110,0.3);color:var(--gold);font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;padding:.55rem;cursor:pointer;font-family:'Jost',sans-serif;transition:all .3s;}
+.coupon-btn:hover{background:rgba(201,169,110,0.08);}
+.coupon-btn:disabled{opacity:.4;cursor:not-allowed;}
+.coupon-stamp{display:none;position:absolute;inset:0;background:rgba(14,11,18,0.75);align-items:center;justify-content:center;}
+.coupon-stamp.show{display:flex;}
+.stamp-inner{border:2px solid var(--rose);color:var(--rose);font-size:.75rem;letter-spacing:.3em;text-transform:uppercase;padding:.5rem 1.25rem;transform:rotate(-8deg);}
+
+/* BIOSKOP TICKET MODAL */
+.ticket-modal{display:none;position:fixed;inset:0;background:rgba(10,8,16,.88);z-index:500;align-items:center;justify-content:center;padding:1.5rem;}
+.ticket-modal.show{display:flex;}
+.ticket-wrap{width:100%;max-width:380px;animation:ticketIn .5s cubic-bezier(.34,1.56,.64,1) forwards;}
+@keyframes ticketIn{from{opacity:0;transform:scale(.85) translateY(30px);}to{opacity:1;transform:scale(1) translateY(0);}}
+
+/* Ticket body */
+.ticket{background:var(--mid);border:1px solid rgba(201,169,110,0.25);position:relative;overflow:hidden;}
+
+/* Top stripe — warna bioskop */
+.ticket-top{background:linear-gradient(135deg,#1a0a2e,#2d1b4e);padding:1.75rem 1.75rem 1.5rem;text-align:center;position:relative;overflow:hidden;}
+.ticket-top::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 8px,rgba(201,169,110,0.03) 8px,rgba(201,169,110,0.03) 16px);}
+.ticket-cinema{font-size:.55rem;letter-spacing:.45em;text-transform:uppercase;color:rgba(201,169,110,0.6);margin-bottom:.75rem;position:relative;}
+.ticket-icon{font-size:3rem;display:block;margin-bottom:.75rem;position:relative;}
+.ticket-valid{font-size:.5rem;letter-spacing:.4em;text-transform:uppercase;color:var(--gold);margin-bottom:.35rem;position:relative;}
+.ticket-title{font-family:'Cormorant Garamond',serif;font-size:1.9rem;font-weight:300;color:var(--cream);line-height:1.1;position:relative;}
+.ticket-subtitle{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.85rem;color:var(--muted);margin-top:.35rem;position:relative;}
+
+/* Perforated separator */
+.ticket-perf{height:0;border-top:2px dashed rgba(201,169,110,0.2);margin:0;position:relative;}
+.ticket-perf::before,.ticket-perf::after{content:'';position:absolute;top:50%;width:20px;height:20px;background:var(--deep);border-radius:50%;transform:translateY(-50%);}
+.ticket-perf::before{left:-10px;}
+.ticket-perf::after{right:-10px;}
+
+/* Ticket info */
+.ticket-info{padding:1.25rem 1.75rem;}
+.ticket-row{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.85rem;}
+.ticket-row:last-child{margin-bottom:0;}
+.ticket-field{display:flex;flex-direction:column;gap:.2rem;}
+.ticket-label{font-size:.5rem;letter-spacing:.3em;text-transform:uppercase;color:var(--muted);}
+.ticket-value{font-family:'Cormorant Garamond',serif;font-size:1rem;color:var(--cream);}
+.ticket-value.gold{color:var(--gold-light);}
+
+/* Barcode */
+.ticket-barcode-wrap{padding:.75rem 1.75rem 1rem;border-top:1px solid rgba(201,169,110,0.08);}
+.ticket-barcode{display:flex;gap:1.5px;height:36px;margin-bottom:.35rem;}
+.ticket-barcode-num{font-size:.55rem;letter-spacing:.15em;color:rgba(201,169,110,0.3);text-align:center;}
+
+/* Buttons */
+.ticket-buttons{padding:1rem 1.75rem 1.25rem;display:flex;flex-direction:column;gap:.5rem;}
+.btn-claim{background:var(--gold);border:none;color:var(--deep);font-family:'Jost',sans-serif;font-size:.72rem;letter-spacing:.25em;text-transform:uppercase;padding:.85rem;cursor:pointer;transition:opacity .2s;width:100%;}
+.btn-claim:hover{opacity:.85;}
+.btn-cancel{background:transparent;border:1px solid rgba(201,169,110,0.2);color:var(--muted);font-family:'Jost',sans-serif;font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;padding:.65rem;cursor:pointer;transition:all .2s;width:100%;}
+.btn-cancel:hover{border-color:var(--gold);color:var(--gold);}
+
+/* Stars decoration */
+.ticket-stars{position:absolute;top:.5rem;right:.75rem;font-size:.7rem;color:rgba(201,169,110,0.2);letter-spacing:.1em;}
+
+@keyframes modalIn{from{opacity:0;transform:scale(.9) translateY(20px);}to{opacity:1;transform:scale(1) translateY(0);}}
+@media(max-width:600px){.coupon-grid{grid-template-columns:1fr;}}
+</style>
 </head>
 <body>
 <div class="cursor" id="cursor"></div>
@@ -99,199 +127,114 @@ footer strong{color:var(--gold);font-weight:400;}
   <div class="ch-page-label">Chapter 04 — Playful</div>
   <h2 class="ch-page-title">Coupon Deck</h2>
   <p style="text-align:center;font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--muted);margin-bottom:.5rem;font-size:1rem;">Tiap kupon bisa dipakai 1x per bulan ✦</p>
-  <p style="text-align:center;font-size:.7rem;color:var(--muted);letter-spacing:.1em;margin-bottom:2rem;" id="coupon-summary">0 dari 6 kupon digunakan bulan ini</p>
-  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem;" id="coupon-grid">
-<div class="coupon-outer" id="coupon-0">
-  <div style="background:var(--mid);border:1px solid rgba(201,169,110,0.15);overflow:hidden;position:relative;transition:border-color .3s;" onmouseover="this.style.borderColor='rgba(201,169,110,0.4)'" onmouseout="this.style.borderColor='rgba(201,169,110,0.15)'">
-    <div style="padding:1.5rem 1.5rem 1rem;">
-      <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem;">
-        <div style="width:44px;height:44px;background:rgba(201,169,110,0.08);border:1px solid rgba(201,169,110,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;">🍽️</div>
-        <div>
-          <div style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--cream);">Makan Gratis</div>
-          <div style="font-size:.72rem;color:var(--muted);line-height:1.5;margin-top:.2rem;">Pilih restoran apapun, aku yang bayar. Tanpa syarat.</div>
-        </div>
-      </div>
-      <div id="status-0" style="font-size:.65rem;color:var(--muted);letter-spacing:.1em;"></div>
-    </div>
-    <div style="border-top:1px dashed rgba(201,169,110,0.15);margin:0 1.5rem;"></div>
-    <div style="padding:.75rem 1.5rem;">
-      <button id="btn-0" onclick="claimCoupon(0)" style="width:100%;background:transparent;border:1px solid rgba(201,169,110,0.3);color:var(--gold);font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;padding:.55rem;cursor:none;font-family:'Jost',sans-serif;transition:all .3s;" onmouseover="this.style.background='rgba(201,169,110,0.08)'" onmouseout="this.style.background='transparent'">Gunakan Kupon</button>
-    </div>
-    <div id="stamp-0" style="display:none;position:absolute;inset:0;background:rgba(14,11,18,0.75);display:none;align-items:center;justify-content:center;">
-      <div style="border:2px solid var(--rose);color:var(--rose);font-size:.75rem;letter-spacing:.3em;text-transform:uppercase;padding:.5rem 1.25rem;transform:rotate(-8deg);">DIPAKAI</div>
-    </div>
-  </div>
-</div>
-<div class="coupon-outer" id="coupon-1">
-  <div style="background:var(--mid);border:1px solid rgba(201,169,110,0.15);overflow:hidden;position:relative;transition:border-color .3s;" onmouseover="this.style.borderColor='rgba(201,169,110,0.4)'" onmouseout="this.style.borderColor='rgba(201,169,110,0.15)'">
-    <div style="padding:1.5rem 1.5rem 1rem;">
-      <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem;">
-        <div style="width:44px;height:44px;background:rgba(201,169,110,0.08);border:1px solid rgba(201,169,110,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;">🎬</div>
-        <div>
-          <div style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--cream);">Nonton Bareng</div>
-          <div style="font-size:.72rem;color:var(--muted);line-height:1.5;margin-top:.2rem;">Film apapun pilihanmu. Aku temenin sampai credits habis.</div>
-        </div>
-      </div>
-      <div id="status-1" style="font-size:.65rem;color:var(--muted);letter-spacing:.1em;"></div>
-    </div>
-    <div style="border-top:1px dashed rgba(201,169,110,0.15);margin:0 1.5rem;"></div>
-    <div style="padding:.75rem 1.5rem;">
-      <button id="btn-1" onclick="claimCoupon(1)" style="width:100%;background:transparent;border:1px solid rgba(201,169,110,0.3);color:var(--gold);font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;padding:.55rem;cursor:none;font-family:'Jost',sans-serif;transition:all .3s;" onmouseover="this.style.background='rgba(201,169,110,0.08)'" onmouseout="this.style.background='transparent'">Gunakan Kupon</button>
-    </div>
-    <div id="stamp-1" style="display:none;position:absolute;inset:0;background:rgba(14,11,18,0.75);display:none;align-items:center;justify-content:center;">
-      <div style="border:2px solid var(--rose);color:var(--rose);font-size:.75rem;letter-spacing:.3em;text-transform:uppercase;padding:.5rem 1.25rem;transform:rotate(-8deg);">DIPAKAI</div>
-    </div>
-  </div>
-</div>
-<div class="coupon-outer" id="coupon-2">
-  <div style="background:var(--mid);border:1px solid rgba(201,169,110,0.15);overflow:hidden;position:relative;transition:border-color .3s;" onmouseover="this.style.borderColor='rgba(201,169,110,0.4)'" onmouseout="this.style.borderColor='rgba(201,169,110,0.15)'">
-    <div style="padding:1.5rem 1.5rem 1rem;">
-      <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem;">
-        <div style="width:44px;height:44px;background:rgba(201,169,110,0.08);border:1px solid rgba(201,169,110,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;">🤗</div>
-        <div>
-          <div style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--cream);">Pelukan Gratis</div>
-          <div style="font-size:.72rem;color:var(--muted);line-height:1.5;margin-top:.2rem;">Kapanpun kamu mau. Stok tidak pernah habis.</div>
-        </div>
-      </div>
-      <div id="status-2" style="font-size:.65rem;color:var(--muted);letter-spacing:.1em;"></div>
-    </div>
-    <div style="border-top:1px dashed rgba(201,169,110,0.15);margin:0 1.5rem;"></div>
-    <div style="padding:.75rem 1.5rem;">
-      <button id="btn-2" onclick="claimCoupon(2)" style="width:100%;background:transparent;border:1px solid rgba(201,169,110,0.3);color:var(--gold);font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;padding:.55rem;cursor:none;font-family:'Jost',sans-serif;transition:all .3s;" onmouseover="this.style.background='rgba(201,169,110,0.08)'" onmouseout="this.style.background='transparent'">Gunakan Kupon</button>
-    </div>
-    <div id="stamp-2" style="display:none;position:absolute;inset:0;background:rgba(14,11,18,0.75);display:none;align-items:center;justify-content:center;">
-      <div style="border:2px solid var(--rose);color:var(--rose);font-size:.75rem;letter-spacing:.3em;text-transform:uppercase;padding:.5rem 1.25rem;transform:rotate(-8deg);">DIPAKAI</div>
-    </div>
-  </div>
-</div>
-<div class="coupon-outer" id="coupon-3">
-  <div style="background:var(--mid);border:1px solid rgba(201,169,110,0.15);overflow:hidden;position:relative;transition:border-color .3s;" onmouseover="this.style.borderColor='rgba(201,169,110,0.4)'" onmouseout="this.style.borderColor='rgba(201,169,110,0.15)'">
-    <div style="padding:1.5rem 1.5rem 1rem;">
-      <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem;">
-        <div style="width:44px;height:44px;background:rgba(201,169,110,0.08);border:1px solid rgba(201,169,110,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;">🌙</div>
-        <div>
-          <div style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--cream);">Temenin Begadang</div>
-          <div style="font-size:.72rem;color:var(--muted);line-height:1.5;margin-top:.2rem;">Kalau kamu nggak bisa tidur, aku temenin sampai pagi.</div>
-        </div>
-      </div>
-      <div id="status-3" style="font-size:.65rem;color:var(--muted);letter-spacing:.1em;"></div>
-    </div>
-    <div style="border-top:1px dashed rgba(201,169,110,0.15);margin:0 1.5rem;"></div>
-    <div style="padding:.75rem 1.5rem;">
-      <button id="btn-3" onclick="claimCoupon(3)" style="width:100%;background:transparent;border:1px solid rgba(201,169,110,0.3);color:var(--gold);font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;padding:.55rem;cursor:none;font-family:'Jost',sans-serif;transition:all .3s;" onmouseover="this.style.background='rgba(201,169,110,0.08)'" onmouseout="this.style.background='transparent'">Gunakan Kupon</button>
-    </div>
-    <div id="stamp-3" style="display:none;position:absolute;inset:0;background:rgba(14,11,18,0.75);display:none;align-items:center;justify-content:center;">
-      <div style="border:2px solid var(--rose);color:var(--rose);font-size:.75rem;letter-spacing:.3em;text-transform:uppercase;padding:.5rem 1.25rem;transform:rotate(-8deg);">DIPAKAI</div>
-    </div>
-  </div>
-</div>
-<div class="coupon-outer" id="coupon-4">
-  <div style="background:var(--mid);border:1px solid rgba(201,169,110,0.15);overflow:hidden;position:relative;transition:border-color .3s;" onmouseover="this.style.borderColor='rgba(201,169,110,0.4)'" onmouseout="this.style.borderColor='rgba(201,169,110,0.15)'">
-    <div style="padding:1.5rem 1.5rem 1rem;">
-      <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem;">
-        <div style="width:44px;height:44px;background:rgba(201,169,110,0.08);border:1px solid rgba(201,169,110,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;">🛒</div>
-        <div>
-          <div style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--cream);">Belanja Bareng</div>
-          <div style="font-size:.72rem;color:var(--muted);line-height:1.5;margin-top:.2rem;">Kamu pilih, aku yang sabar nemenin. Janji nggak ngeluh.</div>
-        </div>
-      </div>
-      <div id="status-4" style="font-size:.65rem;color:var(--muted);letter-spacing:.1em;"></div>
-    </div>
-    <div style="border-top:1px dashed rgba(201,169,110,0.15);margin:0 1.5rem;"></div>
-    <div style="padding:.75rem 1.5rem;">
-      <button id="btn-4" onclick="claimCoupon(4)" style="width:100%;background:transparent;border:1px solid rgba(201,169,110,0.3);color:var(--gold);font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;padding:.55rem;cursor:none;font-family:'Jost',sans-serif;transition:all .3s;" onmouseover="this.style.background='rgba(201,169,110,0.08)'" onmouseout="this.style.background='transparent'">Gunakan Kupon</button>
-    </div>
-    <div id="stamp-4" style="display:none;position:absolute;inset:0;background:rgba(14,11,18,0.75);display:none;align-items:center;justify-content:center;">
-      <div style="border:2px solid var(--rose);color:var(--rose);font-size:.75rem;letter-spacing:.3em;text-transform:uppercase;padding:.5rem 1.25rem;transform:rotate(-8deg);">DIPAKAI</div>
-    </div>
-  </div>
-</div>
-<div class="coupon-outer" id="coupon-5">
-  <div style="background:var(--mid);border:1px solid rgba(201,169,110,0.15);overflow:hidden;position:relative;transition:border-color .3s;" onmouseover="this.style.borderColor='rgba(201,169,110,0.4)'" onmouseout="this.style.borderColor='rgba(201,169,110,0.15)'">
-    <div style="padding:1.5rem 1.5rem 1rem;">
-      <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem;">
-        <div style="width:44px;height:44px;background:rgba(201,169,110,0.08);border:1px solid rgba(201,169,110,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;">💆</div>
-        <div>
-          <div style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--cream);">Hari Bebas Drama</div>
-          <div style="font-size:.72rem;color:var(--muted);line-height:1.5;margin-top:.2rem;">Satu hari penuh tanpa berantem, apapun yang terjadi.</div>
-        </div>
-      </div>
-      <div id="status-5" style="font-size:.65rem;color:var(--muted);letter-spacing:.1em;"></div>
-    </div>
-    <div style="border-top:1px dashed rgba(201,169,110,0.15);margin:0 1.5rem;"></div>
-    <div style="padding:.75rem 1.5rem;">
-      <button id="btn-5" onclick="claimCoupon(5)" style="width:100%;background:transparent;border:1px solid rgba(201,169,110,0.3);color:var(--gold);font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;padding:.55rem;cursor:none;font-family:'Jost',sans-serif;transition:all .3s;" onmouseover="this.style.background='rgba(201,169,110,0.08)'" onmouseout="this.style.background='transparent'">Gunakan Kupon</button>
-    </div>
-    <div id="stamp-5" style="display:none;position:absolute;inset:0;background:rgba(14,11,18,0.75);display:none;align-items:center;justify-content:center;">
-      <div style="border:2px solid var(--rose);color:var(--rose);font-size:.75rem;letter-spacing:.3em;text-transform:uppercase;padding:.5rem 1.25rem;transform:rotate(-8deg);">DIPAKAI</div>
-    </div>
-  </div>
-</div></div>
+  <p style="text-align:center;font-size:.7rem;color:var(--muted);letter-spacing:.1em;margin-bottom:2rem;" id="coupon-summary">memuat...</p>
 
-  <!-- MODAL POPUP COUPON -->
-  <div id="coupon-modal" style="display:none;position:fixed;inset:0;background:rgba(10,8,16,.85);z-index:500;align-items:center;justify-content:center;padding:2rem;">
-    <div id="modal-inner" style="background:var(--mid);border:1px solid rgba(201,169,110,0.3);max-width:420px;width:100%;position:relative;overflow:hidden;animation:modalIn .4s cubic-bezier(.34,1.56,.64,1) forwards;">
-      <!-- perforated top -->
-      <div style="height:12px;background:var(--deep);position:relative;overflow:hidden;">
-        <div style="position:absolute;top:50%;left:0;right:0;border-top:1px dashed rgba(201,169,110,0.3);transform:translateY(-50%);"></div>
-        <div id="modal-holes-top" style="display:flex;justify-content:space-between;padding:0 8px;position:absolute;top:50%;transform:translateY(-50%);width:100%;box-sizing:border-box;"></div>
-      </div>
-      <div style="padding:2rem 2rem 1.5rem;text-align:center;">
-        <div id="modal-icon" style="font-size:3rem;margin-bottom:1rem;"></div>
-        <div style="font-size:.6rem;letter-spacing:.35em;text-transform:uppercase;color:var(--gold);margin-bottom:.5rem;">COUPON VALID</div>
-        <div id="modal-title" style="font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:300;color:var(--cream);margin-bottom:.5rem;"></div>
-        <div id="modal-desc" style="font-size:.8rem;color:var(--muted);line-height:1.6;margin-bottom:1.5rem;"></div>
-        <div style="border-top:1px dashed rgba(201,169,110,0.2);padding-top:1rem;margin-bottom:1rem;">
-          <div style="font-size:.65rem;color:var(--muted);letter-spacing:.1em;">Berlaku hingga</div>
-          <div id="modal-expiry" style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--gold-light);margin-top:.25rem;"></div>
-        </div>
-        <!-- barcode visual -->
-        <div id="modal-barcode" style="display:flex;justify-content:center;gap:2px;height:40px;margin-bottom:1.25rem;"></div>
-        <button onclick="confirmClaim()" style="width:100%;padding:.85rem;background:var(--gold);border:none;color:var(--deep);font-family:'Jost',sans-serif;font-size:.75rem;letter-spacing:.25em;text-transform:uppercase;cursor:none;margin-bottom:.5rem;transition:opacity .2s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">✦ Klaim Sekarang</button>
-        <button onclick="closeModal()" style="width:100%;padding:.6rem;background:transparent;border:1px solid rgba(201,169,110,0.2);color:var(--muted);font-family:'Jost',sans-serif;font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;cursor:none;transition:all .2s;" onmouseover="this.style.borderColor='var(--gold)';this.style.color='var(--gold)'" onmouseout="this.style.borderColor='rgba(201,169,110,0.2)';this.style.color='var(--muted)'">Batalkan</button>
-      </div>
-      <!-- perforated bottom -->
-      <div style="height:12px;background:var(--deep);position:relative;overflow:hidden;">
-        <div style="position:absolute;top:50%;left:0;right:0;border-top:1px dashed rgba(201,169,110,0.3);transform:translateY(-50%);"></div>
-      </div>
-    </div>
+  <div class="coupon-grid" id="coupon-grid">
+    <!-- filled by JS -->
   </div>
 
   <a href="chapter-5.html" class="ch-next-page"><span>Lanjut ke Chapter 05 ✦</span></a>
 </main>
-<style>
-@keyframes modalIn{from{opacity:0;transform:scale(.9) translateY(20px);}to{opacity:1;transform:scale(1) translateY(0);}}
-</style>
 
-<button class="music-btn" id="musicBtn"><div class="eq paused" id="eq"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div></button>
+<!-- BIOSKOP TICKET MODAL -->
+<div class="ticket-modal" id="ticketModal">
+  <div class="ticket-wrap">
+    <div class="ticket">
+      <div class="ticket-top">
+        <div class="ticket-stars">✦ ✦ ✦</div>
+        <div class="ticket-cinema">Yaya & Rian Special Cinema</div>
+        <span class="ticket-icon" id="tkt-icon"></span>
+        <div class="ticket-valid">✦ Kupon Valid ✦</div>
+        <div class="ticket-title" id="tkt-title"></div>
+        <div class="ticket-subtitle" id="tkt-subtitle"></div>
+      </div>
+      <div class="ticket-perf"></div>
+      <div class="ticket-info">
+        <div class="ticket-row">
+          <div class="ticket-field">
+            <span class="ticket-label">Pemegang</span>
+            <span class="ticket-value">Yaya ✦</span>
+          </div>
+          <div class="ticket-field" style="text-align:right;">
+            <span class="ticket-label">Diterbitkan</span>
+            <span class="ticket-value" id="tkt-issued"></span>
+          </div>
+        </div>
+        <div class="ticket-row">
+          <div class="ticket-field">
+            <span class="ticket-label">Berlaku Hingga</span>
+            <span class="ticket-value gold" id="tkt-expiry"></span>
+          </div>
+          <div class="ticket-field" style="text-align:right;">
+            <span class="ticket-label">Cooldown</span>
+            <span class="ticket-value">30 Hari</span>
+          </div>
+        </div>
+      </div>
+      <div class="ticket-perf"></div>
+      <div class="ticket-barcode-wrap">
+        <div class="ticket-barcode" id="tkt-barcode"></div>
+        <div class="ticket-barcode-num" id="tkt-barcode-num"></div>
+      </div>
+      <div class="ticket-buttons">
+        <button class="btn-claim" onclick="confirmClaim()">✦ Klaim Sekarang</button>
+        <button class="btn-cancel" onclick="closeTicket()">Batalkan</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<button class="music-btn" id="musicBtn">
+  <div class="eq paused" id="eq">
+    <div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div>
+  </div>
+</button>
+
 <script>
 const cursor=document.getElementById('cursor'),ring=document.getElementById('cursorRing');
 let mx=0,my=0,rx=0,ry=0;
 document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cursor.style.left=mx+'px';cursor.style.top=my+'px';});
 (function a(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(a);})();
 const sp=['✦','✧','★','✸','✺'];
-document.addEventListener('click',e=>{const el=document.createElement('div');el.className='sparkle';el.textContent=sp[Math.floor(Math.random()*sp.length)];el.style.left=e.clientX+'px';el.style.top=e.clientY+'px';el.style.color=`hsl(${38+Math.random()*20},${60+Math.random()*30}%,${60+Math.random()*20}%)`;document.body.appendChild(el);setTimeout(()=>el.remove(),700);});
+document.addEventListener('click',e=>{const el=document.createElement('div');el.className='sparkle';el.textContent=sp[Math.floor(Math.random()*sp.length)];el.style.left=e.clientX+'px';el.style.top=e.clientY+'px';el.style.color='hsl('+(38+Math.random()*20)+','+(60+Math.random()*30)+'%,'+(60+Math.random()*20)+'%)';document.body.appendChild(el);setTimeout(()=>el.remove(),700);});
 const cv=document.getElementById('starCanvas'),cx=cv.getContext('2d');let W,H,stars=[],ss=[];
 function ic(){W=cv.width=innerWidth;H=cv.height=innerHeight;stars=Array.from({length:200},()=>({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.2+.2,a:Math.random(),sp:Math.random()*.003+.001,ph:Math.random()*Math.PI*2}));}
-function ds(t){cx.clearRect(0,0,W,H);for(const s of stars){const al=s.a*(.5+.5*Math.sin(t*s.sp*60+s.ph));cx.beginPath();cx.arc(s.x,s.y,s.r,0,Math.PI*2);cx.fillStyle=`rgba(232,213,163,${al})`;cx.fill();}
-for(let i=ss.length-1;i>=0;i--){const s=ss[i];s.x+=s.vx;s.y+=s.vy;s.life--;const al=s.life/s.ml,g=cx.createLinearGradient(s.x,s.y,s.x-s.vx*12,s.y-s.vy*12);g.addColorStop(0,`rgba(232,213,163,${al})`);g.addColorStop(1,'rgba(232,213,163,0)');cx.beginPath();cx.strokeStyle=g;cx.lineWidth=1.5;cx.moveTo(s.x,s.y);cx.lineTo(s.x-s.vx*12,s.y-s.vy*12);cx.stroke();if(s.life<=0)ss.splice(i,1);}
-if(Math.random()<.004&&ss.length<3){const a=-Math.PI/6+(Math.random()-.5)*.4;ss.push({x:Math.random()*W,y:Math.random()*H*.5,vx:Math.cos(a)*8,vy:Math.sin(a)*8+4,life:60,ml:60});}
-requestAnimationFrame(ds);}
+function ds(t){cx.clearRect(0,0,W,H);for(const s of stars){const al=s.a*(.5+.5*Math.sin(t*s.sp*60+s.ph));cx.beginPath();cx.arc(s.x,s.y,s.r,0,Math.PI*2);cx.fillStyle='rgba(232,213,163,'+al+')';cx.fill();}
+for(let i=ss.length-1;i>=0;i--){const s=ss[i];s.x+=s.vx;s.y+=s.vy;s.life--;const al=s.life/s.ml,g=cx.createLinearGradient(s.x,s.y,s.x-s.vx*12,s.y-s.vy*12);g.addColorStop(0,'rgba(232,213,163,'+al+')');g.addColorStop(1,'rgba(232,213,163,0)');cx.beginPath();cx.strokeStyle=g;cx.lineWidth=1.5;cx.moveTo(s.x,s.y);cx.lineTo(s.x-s.vx*12,s.y-s.vy*12);cx.stroke();if(s.life<=0)ss.splice(i,1);}
+if(Math.random()<.004&&ss.length<3){const a=-Math.PI/6+(Math.random()-.5)*.4;ss.push({x:Math.random()*W,y:Math.random()*H*.5,vx:Math.cos(a)*8,vy:Math.sin(a)*8+4,life:60,ml:60});}requestAnimationFrame(ds);}
 ic();addEventListener('resize',ic);requestAnimationFrame(ds);
 const pc=document.getElementById('petals');
-function cp(){const p=document.createElement('div');p.className='petal';const sz=4+Math.random()*6;p.style.left=Math.random()*100+'vw';p.style.width=sz+'px';p.style.height=(sz*1.4)+'px';p.style.background=`rgba(${181+Math.random()*20},${99+Math.random()*20},${106+Math.random()*10},.4)`;const dur=8+Math.random()*8;p.style.animationDuration=dur+'s';p.style.animationDelay=Math.random()*5+'s';pc.appendChild(p);setTimeout(()=>p.remove(),(dur+5)*1000);}
+function cp(){const p=document.createElement('div');p.className='petal';const sz=4+Math.random()*6;p.style.left=Math.random()*100+'vw';p.style.width=sz+'px';p.style.height=(sz*1.4)+'px';p.style.background='rgba('+(181+Math.random()*20)+','+(99+Math.random()*20)+','+(106+Math.random()*10)+',.4)';const dur=8+Math.random()*8;p.style.animationDuration=dur+'s';p.style.animationDelay=Math.random()*5+'s';pc.appendChild(p);setTimeout(()=>p.remove(),(dur+5)*1000);}
 setInterval(cp,600);for(let i=0;i<8;i++)cp();
 const toastEl=document.getElementById('toast');let tt;
 function showToast(m){toastEl.textContent=m;toastEl.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>toastEl.classList.remove('show'),3000);}
-const mb=document.getElementById('musicBtn'),eq=document.getElementById('eq');
-let ac,gn,pl=false,osc=[];
-function startMusic(){ac=new(AudioContext||webkitAudioContext)();gn=ac.createGain();gn.gain.setValueAtTime(0,ac.currentTime);gn.gain.linearRampToValueAtTime(.05,ac.currentTime+2);gn.connect(ac.destination);
-[261.63,329.63,392,523.25,659.25].forEach((f,i)=>{const o=ac.createOscillator(),og=ac.createGain();o.type='sine';o.frequency.value=f;og.gain.setValueAtTime(0,ac.currentTime);og.gain.linearRampToValueAtTime(1,ac.currentTime+i*.8+1.5);const lf=ac.createOscillator(),lg=ac.createGain();lf.frequency.value=.2+i*.05;lg.gain.value=.5;lf.connect(lg);lg.connect(o.frequency);lf.start();o.connect(og);og.connect(gn);o.start();osc.push({o,lf});});}
-function stopMusic(){if(gn){gn.gain.linearRampToValueAtTime(0,ac.currentTime+1.5);setTimeout(()=>{osc.forEach(x=>{try{x.o.stop();x.lf.stop();}catch(e){}});ac.close();},1600);}}
-mb.addEventListener('click',()=>{pl=!pl;if(pl){startMusic();eq.classList.remove('paused');showToast('♪ Musik menyala');}else{stopMusic();eq.classList.add('paused');showToast('♪ Musik dimatikan');}});
-document.querySelectorAll('.reveal').forEach(el=>new IntersectionObserver(([e])=>{if(e.isIntersecting)el.classList.add('revealed');},{threshold:.1}).observe(el));
+
+// MUSIC via parent iframe
+function updateEq(p){const e=document.getElementById('eq');p?e.classList.remove('paused'):e.classList.add('paused');}
+window.addEventListener('message',function(e){if(!e.data||e.data.type!=='MUSIC_STATUS')return;updateEq(e.data.playing);});
+window.addEventListener('load',()=>{if(window.parent!==window)window.parent.postMessage({type:'GET_STATUS'},'*');});
+document.getElementById('musicBtn').addEventListener('click',()=>{
+  if(window.parent!==window){window.parent.postMessage({type:'MUSIC_TOGGLE'},'*');showToast("♪ Keshi — It's You");}
+});
+document.addEventListener('click',function(e){
+  const link=e.target.closest('a');
+  if(!link)return;
+  const href=link.getAttribute('href');
+  if(!href||href.startsWith('#')||href.startsWith('javascript'))return;
+  if(window.parent!==window){
+    e.preventDefault();
+    const url=new URL(href,window.location.href).href;
+    window.parent.postMessage({type:'NAVIGATE',url},'*');
+  }
+});
 </script>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+const SUPABASE_URL='https://urznpphqbdmwgnbhrzdi.supabase.co';
+const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVyem5wcGhxYmRtd2duYmhyemRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY5NjczNTYsImV4cCI6MjA5MjU0MzM1Nn0.0kymrIh-8qrl68bDtZqjkI7Ke5mQLrH280zWfzF6UQ8';
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{realtime:{params:{eventsPerSecond:10}}});
+
 const COUPONS=[
   {icon:'🍽️',title:'Makan Gratis',desc:'Pilih restoran apapun, aku yang bayar. Tanpa syarat.'},
   {icon:'🎬',title:'Nonton Bareng',desc:'Film apapun pilihanmu. Aku temenin sampai credits habis.'},
@@ -301,88 +244,126 @@ const COUPONS=[
   {icon:'💆',title:'Hari Bebas Drama',desc:'Satu hari penuh tanpa berantem, apapun yang terjadi.'},
 ];
 
-function getRedeemed(){return JSON.parse(localStorage.getItem('coupon_redeemed')||'{}');}
-function saveRedeemed(r){localStorage.setItem('coupon_redeemed',JSON.stringify(r));}
+// claims = array of {coupon_idx, claimed_at, id}
+let claims=[];
+let pendingIdx=-1;
 
-function isOnCooldown(i){
-  const r=getRedeemed();
-  if(!r[i])return false;
-  const last=new Date(r[i]);
-  const now=new Date();
-  const diffMs=now-last;
-  return diffMs<30*24*3600*1000;
+async function loadClaims(){
+  const{data,error}=await sb.from('coupon_claims').select('*').order('claimed_at',{ascending:false});
+  if(error){console.error(error);return;}
+  claims=data||[];
+  renderCoupons();
 }
 
-function cooldownLeft(i){
-  const r=getRedeemed();
-  if(!r[i])return null;
-  const last=new Date(r[i]);
-  const next=new Date(last.getTime()+30*24*3600*1000);
-  const diff=next-new Date();
-  const days=Math.ceil(diff/86400000);
-  return days>0?days:null;
+function getActiveClaim(idx){
+  const now=new Date();
+  return claims.find(c=>{
+    if(c.coupon_idx!==idx)return false;
+    const diff=now-new Date(c.claimed_at);
+    return diff<30*24*3600*1000;
+  });
+}
+
+function cooldownDays(claimedAt){
+  const next=new Date(new Date(claimedAt).getTime()+30*24*3600*1000);
+  return Math.ceil((next-new Date())/86400000);
 }
 
 function renderCoupons(){
+  const grid=document.getElementById('coupon-grid');
   let used=0;
-  for(let i=0;i<6;i++){
-    const cd=isOnCooldown(i);
-    const btn=document.getElementById('btn-'+i);
-    const stamp=document.getElementById('stamp-'+i);
-    const status=document.getElementById('status-'+i);
-    const days=cooldownLeft(i);
-    if(cd){
-      used++;
-      btn.textContent='Cooldown — '+days+' hari lagi';
-      btn.disabled=true;btn.style.opacity='.4';btn.style.cursor='not-allowed';
-      stamp.style.display='flex';
-      status.textContent='Dipakai — bisa dipakai lagi '+days+' hari lagi';
-    } else {
-      btn.textContent='Gunakan Kupon';
-      btn.disabled=false;btn.style.opacity='1';
-      stamp.style.display='none';
-      const r=getRedeemed();
-      status.textContent=r[i]?'Siap dipakai lagi ✦':'';
-    }
-  }
+  grid.innerHTML=COUPONS.map((c,i)=>{
+    const active=getActiveClaim(i);
+    const isUsed=!!active;
+    if(isUsed)used++;
+    const days=isUsed?cooldownDays(active.claimed_at):null;
+    return `<div class="coupon-card${isUsed?' used':''}" onclick="${isUsed?'':'claimCoupon('+i+')'}">
+      <div class="coupon-body">
+        <div class="coupon-icon-row">
+          <div class="coupon-icon">${c.icon}</div>
+          <div>
+            <div class="coupon-name">${c.title}</div>
+            <div class="coupon-desc">${c.desc}</div>
+          </div>
+        </div>
+        <div class="coupon-status">${isUsed?'Cooldown — '+days+' hari lagi':''}</div>
+      </div>
+      <div class="coupon-divider"></div>
+      <div class="coupon-action">
+        <button class="coupon-btn" ${isUsed?'disabled':''} onclick="event.stopPropagation();${isUsed?'':'claimCoupon('+i+')'}">
+          ${isUsed?'Cooldown — '+days+' hari lagi':'Gunakan Kupon'}
+        </button>
+      </div>
+      <div class="coupon-stamp${isUsed?' show':''}"><div class="stamp-inner">DIPAKAI</div></div>
+    </div>`;
+  }).join('');
   document.getElementById('coupon-summary').textContent=used+' dari 6 kupon digunakan bulan ini';
 }
 
-let pendingIdx=-1;
+// REALTIME
+sb.channel('coupons-realtime')
+  .on('postgres_changes',{event:'INSERT',schema:'public',table:'coupon_claims'},payload=>{
+    if(!claims.find(c=>c.id===payload.new.id)){
+      claims.unshift(payload.new);
+      renderCoupons();
+      showToast('Kupon #'+(payload.new.coupon_idx+1)+' baru diklaim ✦');
+    }
+  })
+  .on('postgres_changes',{event:'DELETE',schema:'public',table:'coupon_claims'},payload=>{
+    claims=claims.filter(c=>c.id!==payload.old.id);
+    renderCoupons();
+  })
+  .subscribe();
+
+// TICKET MODAL
 function claimCoupon(i){
-  if(isOnCooldown(i))return;
+  if(getActiveClaim(i))return;
   pendingIdx=i;
   const c=COUPONS[i];
-  document.getElementById('modal-icon').textContent=c.icon;
-  document.getElementById('modal-title').textContent=c.title;
-  document.getElementById('modal-desc').textContent=c.desc;
-  const exp=new Date(Date.now()+30*24*3600*1000);
-  document.getElementById('modal-expiry').textContent=exp.toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
+  const now=new Date();
+  const exp=new Date(now.getTime()+30*24*3600*1000);
+
+  document.getElementById('tkt-icon').textContent=c.icon;
+  document.getElementById('tkt-title').textContent=c.title;
+  document.getElementById('tkt-subtitle').textContent=c.desc;
+  document.getElementById('tkt-issued').textContent=now.toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'});
+  document.getElementById('tkt-expiry').textContent=exp.toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
+
   // barcode
-  const bc=document.getElementById('modal-barcode');
+  const bc=document.getElementById('tkt-barcode');
   bc.innerHTML='';
-  for(let b=0;b<40;b++){const bar=document.createElement('div');bar.style.cssText='width:'+(Math.random()>0.5?2:1)+'px;height:100%;background:var(--gold);opacity:'+(0.3+Math.random()*.7)+';';bc.appendChild(bar);}
-  const modal=document.getElementById('coupon-modal');
-  modal.style.display='flex';
+  let barcodeNum='';
+  for(let b=0;b<48;b++){
+    const bar=document.createElement('div');
+    const w=Math.random()>0.5?2:1;
+    bar.style.cssText='width:'+w+'px;height:100%;background:var(--gold-light);opacity:'+(0.25+Math.random()*.75)+';flex-shrink:0;';
+    bc.appendChild(bar);
+    if(b%4===0)barcodeNum+=Math.floor(Math.random()*10);
+  }
+  document.getElementById('tkt-barcode-num').textContent=barcodeNum;
+
+  document.getElementById('ticketModal').classList.add('show');
 }
 
-function confirmClaim(){
+async function confirmClaim(){
   if(pendingIdx<0)return;
-  const r=getRedeemed();
-  r[pendingIdx]=new Date().toISOString();
-  saveRedeemed(r);
-  closeModal();
+  const{data,error}=await sb.from('coupon_claims').insert({coupon_idx:pendingIdx}).select().single();
+  if(error){showToast('Gagal mengklaim kupon');console.error(error);return;}
+  claims.unshift(data);
+  closeTicket();
   renderCoupons();
   showToast('Kupon diklaim! Tagih sekarang ya 😉');
 }
 
-function closeModal(){
-  document.getElementById('coupon-modal').style.display='none';
+function closeTicket(){
+  document.getElementById('ticketModal').classList.remove('show');
   pendingIdx=-1;
 }
 
-document.getElementById('coupon-modal').addEventListener('click',function(e){if(e.target===this)closeModal();});
-renderCoupons();
+document.getElementById('ticketModal').addEventListener('click',function(e){if(e.target===this)closeTicket();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeTicket();});
+
+loadClaims();
 </script>
 </body>
 </html>
