@@ -134,6 +134,11 @@ body{background:var(--deep);color:var(--text);font-family:'Jost',sans-serif;font
   </div>
 
   <a href="chapter-5.html" class="ch-next-page"><span>Lanjut ke Chapter 05 ✦</span></a>
+
+  <!-- TOMBOL RESET RAHASIA — hapus kalau tidak dipakai -->
+<div style="text-align:center;margin-top:2rem;">
+  <button onclick="resetAllCoupons()" style="background:none;border:none;color:rgba(201,169,110,0.15);font-size:.6rem;letter-spacing:.2em;cursor:pointer;font-family:'Jost',sans-serif;">reset</button>
+</div>
 </main>
 
 <!-- BIOSKOP TICKET MODAL -->
@@ -353,6 +358,14 @@ async function confirmClaim(){
   closeTicket();
   renderCoupons();
   showToast('Kupon diklaim! Tagih sekarang ya 😉');
+}
+// RESET ALL COUPONS
+  async function resetAllCoupons(){
+  if(!confirm('Reset semua kupon?'))return;
+  await sb.from('coupon_claims').delete().neq('id','00000000-0000-0000-0000-000000000000');
+  claims=[];
+  renderCoupons();
+  showToast('Semua kupon direset ✦');
 }
 
 function closeTicket(){
