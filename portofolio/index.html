@@ -43,8 +43,13 @@ body::before{content:'';position:fixed;inset:0;z-index:1;pointer-events:none;opa
 .sec{position:absolute;inset:0;opacity:0;pointer-events:none;display:flex;flex-direction:column;justify-content:center;}
 .sec.active{opacity:1;pointer-events:auto;}
 .si{transform:translateY(55px);opacity:0;transition:transform .75s cubic-bezier(.25,.46,.45,.94),opacity .75s;}
-.sec.active .si{transform:translateY(0);opacity:1;}
+.sec.active .si{transform:translateY(0) !important;opacity:1 !important;}
 .sec.active .si.d1{transition-delay:.14s;}.sec.active .si.d2{transition-delay:.26s;}.sec.active .si.d3{transition-delay:.4s;}.sec.active .si.d4{transition-delay:.54s;}
+/* entering = active but content still hidden, animates in once class removed */
+.sec.entering .si{transform:translateY(55px) !important;opacity:0 !important;transition:none !important;}
+/* Ensure first section content is always visible */
+#s0 .si{transform:translateY(0);opacity:1;}
+#s0 .si.d1{transition-delay:.3s;}#s0 .si.d2{transition-delay:.5s;}#s0 .si.d3{transition-delay:.7s;}#s0 .si.d4{transition-delay:.9s;}
 /* CANVAS */
 #cv{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.28;}
 /* ─── HERO ─── */
@@ -436,15 +441,17 @@ function goTo(idx){
   setTimeout(()=>{
     /* 2 — swap at midpoint */
     secs[cur].classList.remove('active');
-    /* reset .si elements */
-    secs[idx].querySelectorAll('.si').forEach(el=>{el.style.transition='none';el.style.transform='translateY(55px)';el.style.opacity='0';});
+    /* mark incoming section as "entering" so si resets without !important fight */
+    secs[idx].classList.add('entering');
     secs[idx].classList.add('active');
     mqf.style.opacity='0';
     cur=idx;
     updateUI();
     if(onEnter[idx])setTimeout(onEnter[idx],350);
-    /* re-enable transitions after reflow */
-    requestAnimationFrame(()=>requestAnimationFrame(()=>{secs[idx].querySelectorAll('.si').forEach(el=>{el.style.transition='';});}));
+    /* on next frame remove entering so CSS active rules animate in */
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      secs[idx].classList.remove('entering');
+    }));
   },440);
 
   /* 3 — curtains down */
