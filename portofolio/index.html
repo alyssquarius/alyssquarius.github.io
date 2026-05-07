@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Portfolio – Selamat Irianto, S.Kom</title>
+<title>Portfolio – Jems Kemerun</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
@@ -69,12 +69,10 @@ body::before{content:'';position:fixed;inset:0;z-index:1;pointer-events:none;opa
 .btn-r:hover{background:#bf1020;transform:translateY(-2px);}
 .btn-g{color:var(--light);font-size:12px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;padding-bottom:2px;border-bottom:1px solid #2a2a2a;transition:border-color .3s,color .3s;}
 .btn-g:hover{border-color:var(--red);color:var(--red);}
-.hr{position:relative;overflow:hidden;}
-.hph{width:100%;height:100%;background:linear-gradient(135deg,#181818,#1d1010);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;}
-.hph p{font-size:12px;color:#3a3a3a;letter-spacing:1px;}
-.ubtn{background:transparent;border:1px solid #2a2a2a;color:#444;font-family:var(--sans);font-size:11px;letter-spacing:2px;text-transform:uppercase;padding:10px 20px;cursor:pointer;transition:border-color .3s,color .3s;margin-top:10px;}
-.ubtn:hover{border-color:var(--red);color:var(--red);}
-#himg{display:none;width:100%;height:100%;object-fit:cover;object-position:center top;}
+.hr{position:relative;overflow:hidden;background:var(--dark);}
+.hr::after{content:'';position:absolute;inset:0;background:linear-gradient(to right,var(--dark) 0%,transparent 30%),linear-gradient(to top,var(--dark) 0%,transparent 40%);z-index:2;pointer-events:none;}
+.hr::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(232,25,44,.08) 0%,transparent 60%);z-index:3;pointer-events:none;}
+#himg{width:100%;height:100%;object-fit:cover;object-position:center top;display:block;filter:grayscale(30%) contrast(1.08) brightness(0.88);mix-blend-mode:luminosity;}
 .brush{position:absolute;right:-40px;bottom:60px;width:300px;height:190px;background:var(--red);opacity:.06;clip-path:polygon(10% 0%,100% 20%,90% 100%,0% 80%);transform:rotate(-8deg);}
 .scroll-hint{position:absolute;bottom:36px;left:60px;display:flex;align-items:center;gap:10px;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#333;writing-mode:vertical-rl;}
 .scroll-hint::before{content:'';display:block;width:1px;height:44px;background:linear-gradient(to bottom,var(--red),transparent);animation:sln 2s 1.5s infinite;}
@@ -179,7 +177,7 @@ body::before{content:'';position:fixed;inset:0;z-index:1;pointer-events:none;opa
 
 <!-- NAV -->
 <nav>
-  <a class="nav-logo" href="#" onclick="goTo(0);return false;">SI.</a>
+  <a class="nav-logo" href="#" onclick="goTo(0);return false;">JK.</a>
   <ul class="nav-links">
     <li><a href="#" onclick="goTo(0);return false;" class="active">Home</a></li>
     <li><a href="#" onclick="goTo(1);return false;">About</a></li>
@@ -235,7 +233,7 @@ body::before{content:'';position:fixed;inset:0;z-index:1;pointer-events:none;opa
       <div class="spotlight" id="spl"></div>
       <div class="hl">
         <p class="eyebrow si">— Hello, World</p>
-        <h1 class="htitle si d1" id="ht" data-text="I'm Jems Kemerun">I'm <span>Selamat</span><br>Irianto, S.Kom</h1>
+        <h1 class="htitle si d1" id="ht" data-text="I'm Jems Kemerun">I'm <span>Jems</span><br>Kemerun</h1>
         <p class="hdesc si d2" id="hd"></p>
         <div class="hbtns si d3">
           <a class="btn-r" href="#" onclick="goTo(3);return false;">View Work</a>
@@ -244,7 +242,8 @@ body::before{content:'';position:fixed;inset:0;z-index:1;pointer-events:none;opa
       </div>
       <div class="hr">
         <div class="brush"></div>
-        <img id="himg" src="https://urznpphqbdmwgnbhrzdi.supabase.co/storage/v1/object/public/photos/WhatsApp%20Image%202026-02-02%20at%2010.19.00.jpeg" alt="Profile" style="width:100%;height:100%;object-fit:cover;object-position:center top;display:block;">
+        <div style="position:absolute;inset:0;background:var(--dark);z-index:0;"></div>
+        <img id="himg" src="https://urznpphqbdmwgnbhrzdi.supabase.co/storage/v1/object/public/photos/WhatsApp%20Image%202026-02-02%20at%2010.19.00.jpeg" alt="Profile" style="position:relative;z-index:1;">
       </div>
       <div class="scroll-hint">Scroll</div>
     </div>
