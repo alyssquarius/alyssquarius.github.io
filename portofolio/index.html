@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Portfolio – Selamat Irianto</title>
+<title>Portfolio – Jems Kemerun</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
@@ -48,7 +48,25 @@ body::before{content:'';position:fixed;inset:0;z-index:1;pointer-events:none;opa
 #s0 .si{transform:translateY(0);opacity:1;}
 #s0 .si.d1{transition-delay:.3s;}#s0 .si.d2{transition-delay:.5s;}#s0 .si.d3{transition-delay:.7s;}#s0 .si.d4{transition-delay:.9s;}
 /* CANVAS */
-#cv{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.28;}
+#cv{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.9;}
+
+/* corner brackets */
+.corner{position:fixed;width:40px;height:40px;z-index:3;pointer-events:none;}
+.corner::before,.corner::after{content:'';position:absolute;background:var(--red);opacity:.25;}
+.corner::before{width:100%;height:1px;}
+.corner::after{width:1px;height:100%;}
+.corner.tl{top:20px;left:20px;}
+.corner.tl::before{top:0;left:0;}
+.corner.tl::after{top:0;left:0;}
+.corner.tr{top:20px;right:20px;}
+.corner.tr::before{top:0;right:0;}
+.corner.tr::after{top:0;right:0;}
+.corner.bl{bottom:20px;left:20px;}
+.corner.bl::before{bottom:0;left:0;}
+.corner.bl::after{bottom:0;left:0;}
+.corner.br{bottom:20px;right:20px;}
+.corner.br::before{bottom:0;right:0;}
+.corner.br::after{bottom:0;right:0;}
 /* ─── HERO ─── */
 #s0{background:var(--dark);}
 .hero-grid{display:grid;grid-template-columns:1fr 1fr;height:100vh;position:relative;}
@@ -254,9 +272,15 @@ body::before{content:'';position:fixed;inset:0;z-index:1;pointer-events:none;opa
 <!-- FADE OVERLAY -->
 <div id="overlay"></div>
 
+<!-- CORNER BRACKETS -->
+<div class="corner tl"></div>
+<div class="corner tr"></div>
+<div class="corner bl"></div>
+<div class="corner br"></div>
+
 <!-- NAV -->
 <nav>
-  <a class="nav-logo" href="#" onclick="goTo(0);return false;">SI.</a>
+  <a class="nav-logo" href="#" onclick="goTo(0);return false;">JK.</a>
   <ul class="nav-links">
     <li><a href="#" onclick="goTo(0);return false;" class="active">Home</a></li>
     <li><a href="#" onclick="goTo(1);return false;">About</a></li>
@@ -312,7 +336,7 @@ body::before{content:'';position:fixed;inset:0;z-index:1;pointer-events:none;opa
       <div class="spotlight" id="spl"></div>
       <div class="hl">
         <p class="eyebrow si">— Hello, World</p>
-        <h1 class="htitle si d1" id="ht" data-text="I'm Jems Kemerun">I'm <span>Selamat</span><br>Irianto</h1>
+        <h1 class="htitle si d1" id="ht" data-text="I'm Jems Kemerun">I'm <span>Jems</span><br>Kemerun</h1>
         <p class="hdesc si d2" id="hd"></p>
         <div class="hbtns si d3">
           <a class="btn-r" href="#" onclick="goTo(3);return false;">View Work</a>
@@ -457,8 +481,84 @@ document.querySelectorAll('a,button,.sc,.pi,.dot').forEach(el=>{
 const canvas=document.getElementById('cv'),ctx=canvas.getContext('2d');
 let W=canvas.width=innerWidth,H=canvas.height=innerHeight;
 window.addEventListener('resize',()=>{W=canvas.width=innerWidth;H=canvas.height=innerHeight;});
-const pts=Array.from({length:65},()=>({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,r:Math.random()*1.3+.3}));
-(function dp(){ctx.clearRect(0,0,W,H);pts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>W)p.vx*=-1;if(p.y<0||p.y>H)p.vy*=-1;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle='rgba(232,25,44,.5)';ctx.fill();});for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){const dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<100){ctx.beginPath();ctx.moveTo(pts[i].x,pts[i].y);ctx.lineTo(pts[j].x,pts[j].y);ctx.strokeStyle=`rgba(232,25,44,${.09*(1-d/100)})`;ctx.lineWidth=.5;ctx.stroke();}}requestAnimationFrame(dp);})();
+
+/* ── floating orbs ── */
+const orbs=[
+  {x:W*.15,y:H*.25,r:180,vx:.18,vy:.12,color:'rgba(232,25,44,'},
+  {x:W*.8, y:H*.6, r:240,vx:-.14,vy:.1, color:'rgba(232,25,44,'},
+  {x:W*.5, y:H*.85,r:140,vx:.1, vy:-.16,color:'rgba(180,10,20,'},
+  {x:W*.9, y:H*.1, r:100,vx:-.1, vy:.18,color:'rgba(232,25,44,'},
+];
+
+/* ── grid lines ── */
+const COLS=20,ROWS=14;
+let gridT=0;
+
+function drawBg(){
+  ctx.clearRect(0,0,W,H);
+  gridT+=.004;
+
+  /* radial gradient glow spots */
+  orbs.forEach(o=>{
+    o.x+=o.vx; o.y+=o.vy;
+    if(o.x<-o.r||o.x>W+o.r) o.vx*=-1;
+    if(o.y<-o.r||o.y>H+o.r) o.vy*=-1;
+    const g=ctx.createRadialGradient(o.x,o.y,0,o.x,o.y,o.r);
+    g.addColorStop(0,o.color+'0.06)');
+    g.addColorStop(1,o.color+'0)');
+    ctx.fillStyle=g;
+    ctx.beginPath();ctx.arc(o.x,o.y,o.r,0,Math.PI*2);ctx.fill();
+  });
+
+  /* perspective grid */
+  const hor=H*.62; /* horizon line */
+  const vanX=W/2;
+  ctx.save();
+  ctx.globalAlpha=1;
+
+  /* vertical grid lines fanning from vanishing point */
+  for(let i=0;i<=COLS;i++){
+    const t=i/COLS;
+    const bx=t*W;
+    const wave=Math.sin(gridT+t*Math.PI*2)*6;
+    ctx.beginPath();
+    ctx.moveTo(vanX+wave,hor);
+    ctx.lineTo(bx,H+20);
+    const alpha=0.055+Math.abs(Math.sin(gridT*0.7+t*3))*.025;
+    ctx.strokeStyle=`rgba(232,25,44,${alpha})`;
+    ctx.lineWidth=.6;
+    ctx.stroke();
+  }
+
+  /* horizontal grid lines with perspective */
+  for(let j=1;j<=ROWS;j++){
+    const p=Math.pow(j/ROWS,1.8);
+    const y=hor+(H+20-hor)*p;
+    const spread=(y-hor)/(H+20-hor);
+    const x0=vanX-spread*W*.5;
+    const x1=vanX+spread*W*.5;
+    const wave2=Math.sin(gridT*1.2+j*.5)*3;
+    ctx.beginPath();
+    ctx.moveTo(x0,y+wave2);
+    ctx.lineTo(x1,y+wave2);
+    const alpha=0.04+spread*.04;
+    ctx.strokeStyle=`rgba(232,25,44,${alpha})`;
+    ctx.lineWidth=.5;
+    ctx.stroke();
+  }
+
+  /* subtle horizon glow */
+  const hg=ctx.createLinearGradient(0,hor-40,0,hor+40);
+  hg.addColorStop(0,'rgba(232,25,44,0)');
+  hg.addColorStop(.5,'rgba(232,25,44,0.04)');
+  hg.addColorStop(1,'rgba(232,25,44,0)');
+  ctx.fillStyle=hg;
+  ctx.fillRect(0,hor-40,W,80);
+
+  ctx.restore();
+  requestAnimationFrame(drawBg);
+}
+drawBg();
 
 /* ══ HERO SPOTLIGHT ══ */
 const spl=document.getElementById('spl');
