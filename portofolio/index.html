@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Portfolio – Selamat Irianto</title>
+<title>Portfolio – Jems Kemerun</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
@@ -359,7 +359,6 @@ body::before{content:'';position:fixed;inset:0;z-index:1;pointer-events:none;opa
     <div class="about-grid">
       <div>
         <div class="atw si">
-          <span class="sec-num">01</span>
           <p class="sec-label">About Me</p>
           <h2 class="atitle">Creative<br>Director &<br>Designer</h2>
         </div>
@@ -482,105 +481,154 @@ document.querySelectorAll('a,button,.sc,.pi,.dot').forEach(el=>{
 /* ══ BACKGROUND ══ */
 const canvas=document.getElementById('cv'),ctx=canvas.getContext('2d');
 let W=canvas.width=innerWidth,H=canvas.height=innerHeight;
-window.addEventListener('resize',()=>{W=canvas.width=innerWidth;H=canvas.height=innerHeight;});
+window.addEventListener('resize',()=>{W=canvas.width=innerWidth;H=canvas.height=innerHeight;resizeNodes();});
 
 let t=0;
 
-/* ── aurora mesh nodes ── */
-const nodes=Array.from({length:6},(_,i)=>({
-  x: W*(0.15+i*0.14),
-  y: H*(0.2+Math.sin(i*1.3)*0.6),
-  vx:(Math.random()-.5)*0.4,
-  vy:(Math.random()-.5)*0.3,
-  r: 280+i*60,
-  hue: i%2===0 ? 0 : 340,
-}));
+/* ── topology mesh — animated contour lines ── */
+const COLS=60,ROWS=36;
+let field=[];
 
-/* ── thin scan lines ── */
-function drawScanlines(){
-  ctx.save();
-  for(let y=0;y<H;y+=4){
-    ctx.globalAlpha=0.018;
-    ctx.fillStyle='#000';
-    ctx.fillRect(0,y,W,1);
+function resizeNodes(){
+  field=[];
+  for(let r=0;r<=ROWS;r++){
+    field[r]=[];
+    for(let c=0;c<=COLS;c++) field[r][c]=0;
   }
-  ctx.restore();
+}
+resizeNodes();
+
+/* metaball sources — move smoothly */
+const blobs=[
+  {x:.15,y:.3, vx:.0008,vy:.0005,str:1.8},
+  {x:.75,y:.6, vx:-.0006,vy:.0007,str:2.1},
+  {x:.45,y:.15,vx:.0005,vy:-.0006,str:1.5},
+  {x:.3, y:.8, vx:-.0007,vy:.0004,str:1.7},
+  {x:.85,y:.2, vx:.0006,vy:.0008,str:1.4},
+];
+
+function updateField(){
+  blobs.forEach(b=>{
+    b.x+=b.vx; b.y+=b.vy;
+    if(b.x<0||b.x>1) b.vx*=-1;
+    if(b.y<0||b.y>1) b.vy*=-1;
+  });
+  const cw=W/COLS, ch=H/ROWS;
+  for(let r=0;r<=ROWS;r++){
+    for(let c=0;c<=COLS;c++){
+      const px=c*cw, py=r*ch;
+      let v=0;
+      blobs.forEach(b=>{
+        const dx=px-b.x*W, dy=py-b.y*H;
+        v+=b.str/(dx*dx+dy*dy+1)*10000;
+      });
+      field[r][c]=v;
+    }
+  }
 }
 
-/* ── animated mesh gradient ── */
-function drawAurora(){
-  nodes.forEach(n=>{
-    n.x+=n.vx; n.y+=n.vy;
-    if(n.x<-n.r||n.x>W+n.r) n.vx*=-1;
-    if(n.y<-n.r||n.y>H+n.r) n.vy*=-1;
-    const pulse=1+Math.sin(t*0.8+n.x*0.003)*0.15;
-    const g=ctx.createRadialGradient(n.x,n.y,0,n.x,n.y,n.r*pulse);
-    g.addColorStop(0,`hsla(${n.hue},85%,45%,0.07)`);
-    g.addColorStop(0.5,`hsla(${n.hue},70%,35%,0.03)`);
-    g.addColorStop(1,`hsla(${n.hue},60%,20%,0)`);
+/* marching squares — draw iso-contour lines */
+function drawTopology(){
+  const cw=W/COLS, ch=H/ROWS;
+  /* multiple threshold levels = layered contour map */
+  const levels=[
+    {th:0.18, alpha:0.22, lw:0.6},
+    {th:0.30, alpha:0.16, lw:0.5},
+    {th:0.45, alpha:0.12, lw:0.4},
+    {th:0.65, alpha:0.08, lw:0.35},
+    {th:0.90, alpha:0.05, lw:0.3},
+    {th:1.20, alpha:0.04, lw:0.25},
+  ];
+
+  levels.forEach(lv=>{
+    ctx.beginPath();
+    ctx.strokeStyle=`rgba(232,25,44,${lv.alpha})`;
+    ctx.lineWidth=lv.lw;
+    for(let r=0;r<ROWS;r++){
+      for(let c=0;c<COLS;c++){
+        const v00=field[r][c], v10=field[r][c+1];
+        const v01=field[r+1][c], v11=field[r+1][c+1];
+        const th=lv.th;
+        /* find edge crossings via linear interpolation */
+        function lerp(a,b,th){ return (th-a)/(b-a); }
+        const x0=c*cw, y0=r*ch;
+        const x1=(c+1)*cw, y1=(r+1)*ch;
+        /* top edge */
+        const tTop=(v00<th)!==(v10<th) ? {x:x0+lerp(v00,v10,th)*cw,y:y0} : null;
+        /* bottom edge */
+        const tBot=(v01<th)!==(v11<th) ? {x:x0+lerp(v01,v11,th)*cw,y:y1} : null;
+        /* left edge */
+        const tLft=(v00<th)!==(v01<th) ? {x:x0,y:y0+lerp(v00,v01,th)*ch} : null;
+        /* right edge */
+        const tRgt=(v10<th)!==(v11<th) ? {x:x1,y:y0+lerp(v10,v11,th)*ch} : null;
+        const pts=[tTop,tBot,tLft,tRgt].filter(Boolean);
+        if(pts.length>=2){
+          ctx.moveTo(pts[0].x,pts[0].y);
+          ctx.lineTo(pts[1].x,pts[1].y);
+        }
+      }
+    }
+    ctx.stroke();
+  });
+}
+
+/* ── slow ambient glow pools ── */
+function drawGlow(){
+  blobs.forEach((b,i)=>{
+    const r=Math.min(W,H)*(0.28+i*0.04);
+    const pulse=1+Math.sin(t*0.6+i*1.2)*0.12;
+    const g=ctx.createRadialGradient(b.x*W,b.y*H,0,b.x*W,b.y*H,r*pulse);
+    g.addColorStop(0,`rgba(232,25,44,0.055)`);
+    g.addColorStop(0.5,`rgba(180,10,20,0.02)`);
+    g.addColorStop(1,`rgba(0,0,0,0)`);
     ctx.fillStyle=g;
     ctx.beginPath();
-    ctx.arc(n.x,n.y,n.r*pulse,0,Math.PI*2);
+    ctx.arc(b.x*W,b.y*H,r*pulse,0,Math.PI*2);
     ctx.fill();
   });
 }
 
-/* ── subtle dot grid ── */
-function drawDotGrid(){
-  const spacing=44;
-  const offX=(t*8)%spacing;
-  const offY=(t*5)%spacing;
-  ctx.save();
-  for(let x=-spacing;x<W+spacing;x+=spacing){
-    for(let y=-spacing;y<H+spacing;y+=spacing){
-      const px=x+offX, py=y+offY;
-      /* distance from center for fade */
-      const dx=px-W/2, dy=py-H/2;
-      const dist=Math.sqrt(dx*dx+dy*dy);
-      const maxD=Math.sqrt(W*W+H*H)/2;
-      const alpha=0.06*(1-dist/maxD);
-      ctx.globalAlpha=Math.max(0,alpha);
-      ctx.fillStyle='rgba(232,25,44,1)';
-      ctx.beginPath();
-      ctx.arc(px,py,0.8,0,Math.PI*2);
-      ctx.fill();
-    }
+/* ── fine grain noise overlay ── */
+let noiseCanvas,noiseCtx;
+(function initNoise(){
+  noiseCanvas=document.createElement('canvas');
+  noiseCanvas.width=noiseCanvas.height=200;
+  noiseCtx=noiseCanvas.getContext('2d');
+  const id=noiseCtx.createImageData(200,200);
+  for(let i=0;i<id.data.length;i+=4){
+    const v=Math.random()*255;
+    id.data[i]=id.data[i+1]=id.data[i+2]=v;
+    id.data[i+3]=18;
   }
-  ctx.restore();
-}
+  noiseCtx.putImageData(id,0,0);
+})();
 
-/* ── diagonal light streak ── */
-function drawStreak(){
+function drawNoise(){
   ctx.save();
-  const x=W*(.2+Math.sin(t*.18)*.35);
-  const g=ctx.createLinearGradient(x-200,0,x+200,H);
-  g.addColorStop(0,'rgba(232,25,44,0)');
-  g.addColorStop(.4,'rgba(232,25,44,0.025)');
-  g.addColorStop(.5,'rgba(255,60,60,0.04)');
-  g.addColorStop(.6,'rgba(232,25,44,0.025)');
-  g.addColorStop(1,'rgba(232,25,44,0)');
-  ctx.fillStyle=g;
+  ctx.globalAlpha=1;
+  const pat=ctx.createPattern(noiseCanvas,'repeat');
+  ctx.fillStyle=pat;
   ctx.fillRect(0,0,W,H);
   ctx.restore();
 }
 
 /* ── vignette ── */
 function drawVignette(){
-  const g=ctx.createRadialGradient(W/2,H/2,H*.2,W/2,H/2,H*.85);
+  const g=ctx.createRadialGradient(W/2,H/2,H*.15,W/2,H/2,H*.9);
   g.addColorStop(0,'rgba(0,0,0,0)');
-  g.addColorStop(1,'rgba(0,0,0,0.55)');
+  g.addColorStop(1,'rgba(0,0,0,0.65)');
   ctx.fillStyle=g;
   ctx.fillRect(0,0,W,H);
 }
 
 function drawBg(){
   ctx.clearRect(0,0,W,H);
-  t+=0.012;
-  drawAurora();
-  drawDotGrid();
-  drawStreak();
+  t+=0.008;
+  updateField();
+  drawGlow();
+  drawTopology();
   drawVignette();
-  drawScanlines();
+  drawNoise();
   requestAnimationFrame(drawBg);
 }
 drawBg();
